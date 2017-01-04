@@ -1,4 +1,4 @@
-FROM resin/rpi-nodejs
+FROM resin/raspberrypi2-node:5.7-slim
 
 # Install dependencies
 RUN sh ./dependencies.sh
