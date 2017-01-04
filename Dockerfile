@@ -1,7 +1,7 @@
 FROM resin/rpi-nodejs
 
 # Install dependencies
-RUN ./dependencies.sh
+RUN sh ./dependencies.sh
 
 # Create application directory
 RUN mkdir -p /app/yash-zwave-gateway
