@@ -1,4 +1,7 @@
-FROM resin/raspberrypi2-node:5.7-slim
+FROM resin/raspberrypi2-node:7.0
+
+WORKDIR /usr/src/app
+COPY . ./
 
 # Install dependencies
 RUN sh ./dependencies.sh
