@@ -2,7 +2,7 @@
 
 # Required by OpenZWave
 echo "== Installing libudev-dev... =="
-apt-get update && apt-get install -y libudev-dev
+apt-get update && apt-get install -y libudev0
 echo "== Done installing libudev-dev. =="
 
 # install OpenZWave 
