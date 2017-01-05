@@ -112,18 +112,10 @@ zwave.on('notification', function(nodeid, notif) {
 
 zwave.on('scan complete', function() {
     console.log('====> scan complete, hit ^C to finish.');
-    // set dimmer node 5 to 50%
-    //zwave.setValue(5,38,1,0,50);
-    //zwave.setValue( {node_id:5, class_id: 38, instance:1, index:0}, 50);
-    // Add a new device to the ZWave controller
-    //if (zwave.hasOwnProperty('beginControllerCommand')) {
-      // using legacy mode (OpenZWave version < 1.3) - no security
-      //zwave.beginControllerCommand('AddDevice', true);
-    //} else {
-      // using new security API
-      // set this to 'true' for secure devices eg. door locks
-      //zwave.addNode(false);
-    //}
+});
+
+zwave.on('node event', function(nodeid, data) {
+    console.log('node%d: node event received: %d', nodeid, data);
 });
 
 zwave.on('controller command', function(r,s) {
