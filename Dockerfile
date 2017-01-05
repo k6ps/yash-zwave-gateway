@@ -2,6 +2,7 @@ FROM resin/raspberrypi2-node:7.0
 
 WORKDIR /usr/src/app
 COPY . ./
+ENV INITSYSTEM on
 
 # Install dependencies
 RUN sh ./dependencies.sh
