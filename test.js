@@ -35,6 +35,7 @@ zwave.on('value added', function(nodeid, comclass, value) {
 });
 
 zwave.on('value changed', function(nodeid, comclass, value) {
+    console.log('=== node%d: node value changed: %d : %d', nodeid, comclass, valueId);
     if (nodes[nodeid]['ready']) {
         console.log('node%d: changed: %d:%s:%s->%s', nodeid, comclass,
                 value['label'],
@@ -42,6 +43,10 @@ zwave.on('value changed', function(nodeid, comclass, value) {
                 value['value']);
     }
     nodes[nodeid]['classes'][comclass][value.index] = value;
+});
+
+zwave.on('value refreshed', function(nodeid, comclass, value) {
+    console.log('=== node%d: node value refreshed: %d : %d', nodeid, comclass, valueId);
 });
 
 zwave.on('value removed', function(nodeid, comclass, index) {
@@ -115,7 +120,11 @@ zwave.on('scan complete', function() {
 });
 
 zwave.on('node event', function(nodeid, data) {
-    console.log('node%d: node event received: %d', nodeid, data);
+    console.log('=== node%d: node event received: %d', nodeid, data);
+});
+
+zwave.on('scene event', function(nodeid, sceneid){
+    console.log('=== node%d: scene event received: %d', nodeid, sceneid);
 });
 
 zwave.on('controller command', function(r,s) {
