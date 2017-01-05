@@ -35,7 +35,7 @@ zwave.on('value added', function(nodeid, comclass, value) {
 });
 
 zwave.on('value changed', function(nodeid, comclass, value) {
-    console.log('=== node%d: node value changed: %d : %d', nodeid, comclass, valueId);
+    console.log('=== node%d: node value changed: %d : %d', nodeid, comclass, value);
     if (nodes[nodeid]['ready']) {
         console.log('node%d: changed: %d:%s:%s->%s', nodeid, comclass,
                 value['label'],
@@ -46,7 +46,7 @@ zwave.on('value changed', function(nodeid, comclass, value) {
 });
 
 zwave.on('value refreshed', function(nodeid, comclass, value) {
-    console.log('=== node%d: node value refreshed: %d : %d', nodeid, comclass, valueId);
+    console.log('=== node%d: node value refreshed: %d : %d', nodeid, comclass, value);
 });
 
 zwave.on('value removed', function(nodeid, comclass, index) {
