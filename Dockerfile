@@ -10,8 +10,7 @@ RUN sh ./dependencies.sh
 # RUN mkdir -p /usr/src/app/yash-zwave-gateway
 
 # Install node-openzwave-shared
-#RUN cd /usr/src/app/yash-zwave-gateway
-RUN npm install openzwave-shared
+RUN cd /usr/src/app && npm install openzwave-shared
 
 # Test
 #RUN mkdir -p /usr/src/app/openzwave-shared-test
