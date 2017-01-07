@@ -35,8 +35,16 @@ zwave.on('value added', function(nodeid, comclass, value) {
 });
 
 zwave.on('value changed', function(nodeid, comclass, value) {
+    var nodeName = 
+        nodes[nodeid]['manufacturer']+', '+
+        nodes[nodeid]['product']+', '+
+        nodes[nodeid]['producttype']+', '+
+        nodes[nodeid]['name'];
     if (nodes[nodeid]['ready']) {
-        console.log('node%d: changed: %d:%s:%s->%s', nodeid, comclass,
+        console.log('=== node%d (%s): changed: %d:%s:%s->%s', 
+                nodeid,
+                nodeName, 
+                comclass,
                 value['label'],
                 nodes[nodeid]['classes'][comclass][value.index]['value'],
                 value['value']);
