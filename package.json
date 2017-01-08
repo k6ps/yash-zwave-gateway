@@ -1,0 +1,21 @@
+{
+  "name": "yash-zwave-gateway",
+  "version": "0.0.1",
+  "description": "A gateway for converting and/or exchanging messages between Z-Wave network and networks using other technologies, for use with amateur smart home projects.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "chai": "^3.5.0",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0"
+  },
+  "dependencies": {
+    "openzwave-shared": "^1.2.7"
+  },
+  "author": "k6ps",
+  "license": "GPL-3.0"
+}
