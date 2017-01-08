@@ -12,4 +12,4 @@ RUN JOBS=MAX npm install --production --unsafe-perm && npm cache clean && rm -rf
 RUN cd /usr/src/app && npm install openzwave-shared
 
 # Test
-CMD node ./test.js
+CMD node ./index.js

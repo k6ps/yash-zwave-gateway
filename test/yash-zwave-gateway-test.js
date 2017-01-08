@@ -1,0 +1,30 @@
+"use strict";
+
+var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require("sinon-chai");
+chai.should();
+chai.use(sinonChai);
+
+var YashZwaveGateway = require('./../yash-zwave-gateway.js');
+var ZWave = require('openzwave-shared');
+var zwave = new ZWave();
+
+describe('YashZwaveGateway', function() {
+
+    beforeEach(function() {
+        sinon.stub(zwave, 'connect', function(usbId) {});
+    });
+
+    afterEach(function() {
+        zwave.connect.restore();
+    });
+
+    it('should call zwave.connect with default USB device when started', function(done) {
+        var yashZwaveGateway = new YashZwaveGateway(zwave);
+        yashZwaveGateway.start();
+        zwave.connect.should.have.been.calledWith('/dev/ttyUSB0');
+        done();
+    });
+
+});
