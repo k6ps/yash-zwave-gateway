@@ -1,3 +1,5 @@
+'use strict';
+
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave();
 var YashZwaveGateway = require('./yash-zwave-gateway.js');

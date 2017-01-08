@@ -1,5 +1,7 @@
 "use strict";
 
+const YASH_DEFAULT_ZWAVE_DEVICE='/dev/ttyUSB0';
+
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require("sinon-chai");
@@ -25,14 +27,14 @@ describe('YashZwaveGateway', function() {
     it('should call zwave.connect with default USB device when started', function(done) {
         var yashZwaveGateway = new YashZwaveGateway(zwave);
         yashZwaveGateway.start();
-        zwave.connect.should.have.been.calledWith('/dev/ttyUSB0');
+        zwave.connect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
         done();
     });
 
     it('should call zwave.disconnect with default USB device when stopped', function(done) {
         var yashZwaveGateway = new YashZwaveGateway(zwave);
         yashZwaveGateway.stop();
-        zwave.disconnect.should.have.been.calledWith('/dev/ttyUSB0');
+        zwave.disconnect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
         done();
     });
 
