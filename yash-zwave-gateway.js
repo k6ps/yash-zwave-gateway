@@ -21,7 +21,16 @@ YashZwaveGateway.prototype.getNodes = function() {
 
 YashZwaveGateway.prototype.addNode = function(nodeId) {
     this._nodes[nodeId] = {
-        'nodeId': nodeId
+        manufacturer: '',
+        manufacturerid: '',
+        product: '',
+        producttype: '',
+        productid: '',
+        type: '',
+        name: '',
+        loc: '',
+        classes: {},
+        ready: false
     };
 };
 

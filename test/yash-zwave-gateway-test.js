@@ -53,11 +53,22 @@ describe('YashZwaveGateway', function() {
         done();
     });
 
-    it('should have the node with given ID after addNode is called', function(done) {
+    it('should have the node with given ID and all empty values when addNode is called', function(done) {
         var yashZwaveGateway = new YashZwaveGateway(zwave);
         yashZwaveGateway.addNode(1);
-        should.exist(yashZwaveGateway.getNodes()[1]);
-        yashZwaveGateway.getNodes()[1].should.be.an('object');
+        var testNode = yashZwaveGateway.getNodes()[1];
+        should.exist(testNode);
+        testNode.should.be.an('object');
+        testNode.manufacturer.should.equal('');
+        testNode.manufacturerid.should.equal('');
+        testNode.product.should.equal('');
+        testNode.producttype.should.equal('');
+        testNode.productid.should.equal('');
+        testNode.type.should.equal('');
+        testNode.name.should.equal('');
+        testNode.loc.should.equal('');
+        testNode.classes.should.be.empty;
+        testNode.ready.should.equal(false);
         done();
     });
 
