@@ -4,6 +4,7 @@ const YASH_DEFAULT_ZWAVE_DEVICE='/dev/ttyUSB0';
 
 function YashZwaveGateway(zwave) {
     this._zwave = zwave;
+    this._nodes = [];
 }
 
 YashZwaveGateway.prototype.start = function() {
@@ -12,6 +13,16 @@ YashZwaveGateway.prototype.start = function() {
 
 YashZwaveGateway.prototype.stop = function() {
     this._zwave.disconnect(YASH_DEFAULT_ZWAVE_DEVICE);
+};
+
+YashZwaveGateway.prototype.getNodes = function() {
+    return this._nodes;
+};
+
+YashZwaveGateway.prototype.addNode = function(nodeId) {
+    this._nodes[nodeId] = {
+        'nodeId': nodeId
+    };
 };
 
 module.exports = YashZwaveGateway;
