@@ -1,6 +1,6 @@
 "use strict";
 
-const YASH_DEFAULT_ZWAVE_DEVICE='/dev/ttyUSB0';
+const YASH_DEFAULT_ZWAVE_DEVICE = '/dev/ttyUSB0';
 
 var chai = require('chai');
 var sinon = require('sinon');
@@ -65,30 +65,12 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
-        it('should call the success callback function when started successfully', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start(function() {
-                done();
-            });
-            fireEvent('scan complete');
-        });
-
         it('should send success message when started successfully', function(done) {
             var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
             yashZwaveGateway.start();
             fireEvent('scan complete');
             messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Startup successful, initial network scan complete.');
             done();
-        });
-
-        it('should call the failure callback function when driver fails', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start(function() {
-                done("Error: success callback should not have been called in this case");
-            }, function() {
-                done();
-            });
-            fireEvent('driver failed');
         });
 
         it('should send failure message when driver fails', function(done) {
