@@ -49,7 +49,7 @@ describe('YashZwaveGateway', function() {
 
         it('should call zwave.connect with default USB device when started', function(done) {
             var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start(function() {}, function() {});
+            yashZwaveGateway.start();
             zwave.connect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
             done();
         });
@@ -58,8 +58,6 @@ describe('YashZwaveGateway', function() {
             var yashZwaveGateway = new YashZwaveGateway(zwave);
             yashZwaveGateway.start(function() {
                 done();
-            }, function() {
-                done("Error: failure callback should not have been called in this case.");
             });
             fireEvent('scan complete');
         });

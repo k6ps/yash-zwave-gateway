@@ -2,9 +2,10 @@
 
 const YASH_DEFAULT_ZWAVE_DEVICE='/dev/ttyUSB0';
 
-function YashZwaveGateway(zwave) {
+function YashZwaveGateway(zwave, messenger) {
     this._zwave = zwave;
     this._nodes = [];
+    this._messenger = messenger;
 }
 
 YashZwaveGateway.prototype.start = function(successCallback, failureCallback) {
@@ -16,12 +17,16 @@ YashZwaveGateway.prototype.start = function(successCallback, failureCallback) {
 
     this._zwave.on('scan complete', function() {
         console.log('scanning complete.');
-        successCallback();
+        if (successCallback) {
+            successCallback();
+        }
     });
 
     this._zwave.on('driver failed', function() {
         console.error('Driver failed.');
-        failureCallback();
+        if (failureCallback) {
+            failureCallback();
+        }
     });
 
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
