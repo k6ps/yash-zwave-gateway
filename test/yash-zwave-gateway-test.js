@@ -26,9 +26,18 @@ describe('YashZwaveGateway', function() {
 
     it('should call zwave.connect with default USB device when started', function(done) {
         var yashZwaveGateway = new YashZwaveGateway(zwave);
-        yashZwaveGateway.start();
+        yashZwaveGateway.start(function() {}, function() {});
         zwave.connect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
         done();
+    });
+
+    it('should call the success callback function when started successfully', function(done) {
+        var yashZwaveGateway = new YashZwaveGateway(zwave);
+        yashZwaveGateway.start(function() {
+            done();
+        }, function() {
+            done("Error: failure callback should not have been called in this case.");
+        });
     });
 
     it('should call zwave.disconnect with default USB device when stopped', function(done) {

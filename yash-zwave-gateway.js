@@ -7,8 +7,12 @@ function YashZwaveGateway(zwave) {
     this._nodes = [];
 }
 
-YashZwaveGateway.prototype.start = function() {
+YashZwaveGateway.prototype.start = function(successCallback, failureCallback) {
+    console.log('Connecting to Z-Wave device %s ...', YASH_DEFAULT_ZWAVE_DEVICE)
+    this._startSuccessCallback = successCallback;
+    this._startFailureCallback = failureCallback;
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
+    this._startSuccessCallback();
 };
 
 YashZwaveGateway.prototype.stop = function() {
