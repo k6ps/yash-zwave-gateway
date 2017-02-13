@@ -14,14 +14,35 @@ var zwave = new ZWave();
 
 describe('YashZwaveGateway', function() {
 
+    var zwaveEventCallbacks = {};
+
+    function registerEventCallback(event, callback) {
+        zwaveEventCallbacks[event] = callback;
+    }
+
+    function clearEventCallbacks() {
+        zwaveEventCallbacks = {};
+    }
+
+    function fireEvent(eventName, eventArg1, eventArg2, eventArg3) {
+        if (zwaveEventCallbacks[eventName]) {
+            zwaveEventCallbacks[eventName](eventArg1, eventArg2, eventArg3);
+        }
+    }
+
     beforeEach(function() {
         sinon.stub(zwave, 'connect', function(usbId) {});
         sinon.stub(zwave, 'disconnect', function(usbId) {});
+        sinon.stub(zwave, 'on', function(eventName, eventCallback) {
+            registerEventCallback(eventName, eventCallback);
+        });
     });
 
     afterEach(function() {
         zwave.connect.restore();
         zwave.disconnect.restore();
+        zwave.on.restore();
+        clearEventCallbacks();
     });
 
     describe('#start()', function() {
@@ -40,6 +61,17 @@ describe('YashZwaveGateway', function() {
             }, function() {
                 done("Error: failure callback should not have been called in this case.");
             });
+            fireEvent('scan complete');
+        });
+
+        it('should call the failure callback function when driver fails', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave);
+            yashZwaveGateway.start(function() {
+                done("Error: success callback should not have been called in this case");
+            }, function() {
+                done();
+            });
+            fireEvent('driver failed');
         });
 
     });    

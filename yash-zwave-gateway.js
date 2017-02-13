@@ -8,11 +8,24 @@ function YashZwaveGateway(zwave) {
 }
 
 YashZwaveGateway.prototype.start = function(successCallback, failureCallback) {
-    console.log('Connecting to Z-Wave device %s ...', YASH_DEFAULT_ZWAVE_DEVICE)
-    this._startSuccessCallback = successCallback;
-    this._startFailureCallback = failureCallback;
+    console.log('Connecting to Z-Wave device %s ...', YASH_DEFAULT_ZWAVE_DEVICE);
+
+    this._zwave.on('driver ready', function(homeid) {
+        console.log('scanning homeid=0x%s...', homeid.toString(16));
+    });    
+
+    this._zwave.on('scan complete', function() {
+        console.log('scanning complete.');
+        successCallback();
+    });
+
+    this._zwave.on('driver failed', function() {
+        console.error('Driver failed.');
+        failureCallback();
+    });
+
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
-    this._startSuccessCallback();
+
 };
 
 YashZwaveGateway.prototype.stop = function() {
