@@ -11,6 +11,8 @@ var should = chai.should();
 var YashZwaveGateway = require('./../yash-zwave-gateway.js');
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave();
+var YashTwitterMessenger = require('./../yash-twitter-messenger.js');
+var messenger = new YashTwitterMessenger();
 
 describe('YashZwaveGateway', function() {
 
@@ -36,6 +38,7 @@ describe('YashZwaveGateway', function() {
         sinon.stub(zwave, 'on', function(eventName, eventCallback) {
             registerEventCallback(eventName, eventCallback);
         });
+        sinon.stub(messenger, 'sendMessage', function(source, message) {});
     });
 
     afterEach(function() {
@@ -43,6 +46,7 @@ describe('YashZwaveGateway', function() {
         zwave.disconnect.restore();
         zwave.on.restore();
         clearEventCallbacks();
+        messenger.sendMessage.restore();
     });
 
     describe('#start()', function() {
@@ -54,12 +58,27 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
+        it('should send startup message when started', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+            yashZwaveGateway.start();
+            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Starting up...');
+            done();
+        });
+
         it('should call the success callback function when started successfully', function(done) {
             var yashZwaveGateway = new YashZwaveGateway(zwave);
             yashZwaveGateway.start(function() {
                 done();
             });
             fireEvent('scan complete');
+        });
+
+        it('should send success message when started successfully', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+            yashZwaveGateway.start();
+            fireEvent('scan complete');
+            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Startup successful, initial network scan complete.');
+            done();
         });
 
         it('should call the failure callback function when driver fails', function(done) {
@@ -70,6 +89,14 @@ describe('YashZwaveGateway', function() {
                 done();
             });
             fireEvent('driver failed');
+        });
+
+        it('should send failure message when driver fails', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+            yashZwaveGateway.start();
+            fireEvent('driver failed');
+            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Driver failed, network not started.');
+            done();
         });
 
     });    
