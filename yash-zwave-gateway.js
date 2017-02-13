@@ -45,6 +45,9 @@ YashZwaveGateway.prototype.start = function(successCallback, failureCallback) {
 
 YashZwaveGateway.prototype.stop = function() {
     this._zwave.disconnect(YASH_DEFAULT_ZWAVE_DEVICE);
+    if (this._messenger) {
+        this._messenger.sendMessage('Z-Wave Network','Stopped.');
+    }
 };
 
 YashZwaveGateway.prototype.getNodes = function() {

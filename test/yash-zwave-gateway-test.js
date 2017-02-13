@@ -110,8 +110,14 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
-    });
+        it('should send stopped message when stopped', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+            yashZwaveGateway.stop();
+            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Stopped.');
+            done();
+        });
 
+    });
 
     describe('#getNodes()', function() {
 
