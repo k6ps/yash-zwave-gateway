@@ -14,7 +14,8 @@
     "sinon-chai": "^2.8.0"
   },
   "dependencies": {
-    "openzwave-shared": "^1.2.7"
+    "openzwave-shared": "^1.2.7",
+    "twitter": "^1.7.0"
   },
   "author": "k6ps",
   "license": "GPL-3.0"
