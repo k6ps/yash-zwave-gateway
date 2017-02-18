@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const YASH_DEFAULT_ZWAVE_DEVICE = '/dev/ttyUSB0';
 
