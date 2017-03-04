@@ -19,6 +19,7 @@ describe('YashZwaveGateway', function() {
     var zwaveEventCallbacks = {};
 
     function registerEventCallback(event, callback) {
+        console.log('Registering callback for event: '+event);
         zwaveEventCallbacks[event] = callback;
     }
 
@@ -28,6 +29,7 @@ describe('YashZwaveGateway', function() {
 
     function fireEvent(eventName, eventArg1, eventArg2, eventArg3) {
         if (zwaveEventCallbacks[eventName]) {
+            console.log('Firing event: '+eventName);
             zwaveEventCallbacks[eventName](eventArg1, eventArg2, eventArg3);
         }
     }
@@ -122,7 +124,7 @@ describe('YashZwaveGateway', function() {
 
     describe('#addNode()', function() {
 
-        it('should have the node with given ID and all empty values when addNode is called', function(done) {
+        it('should have the node with given ID and all empty details when addNode is called', function(done) {
             var yashZwaveGateway = new YashZwaveGateway(zwave);
             yashZwaveGateway.addNode(1);
             var testNode = yashZwaveGateway.getNodes()[1];
@@ -158,6 +160,53 @@ describe('YashZwaveGateway', function() {
             should.not.exist(yashZwaveGateway.getNodes()[5]);
             should.not.exist(yashZwaveGateway.getNodes()[11]);
             should.not.exist(yashZwaveGateway.getNodes()[258]);
+            done();
+        });
+
+        it('should mark node as ready when zwave fires node ready event', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave);
+            yashZwaveGateway.start();
+            yashZwaveGateway.addNode(4);
+            yashZwaveGateway.getNodes()[4].ready.should.equal(false);
+            fireEvent('node ready', 4, {
+                manufacturer: 'test manufacturer',
+                manufacturerid: 123,
+                product: 'Test Product',
+                producttype: 'Test ProductType',
+                productid: 321,
+                type: 'test type',
+                name: 'Test Product 123',
+                loc: 112233
+            });
+            yashZwaveGateway.getNodes()[4].ready.should.equal(true);
+            done();
+        });
+
+        it('should set node details when zwave fires node ready event', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave);
+            yashZwaveGateway.start();
+            yashZwaveGateway.addNode(4);
+            fireEvent('node ready', 4, {
+                manufacturer: 'test manufacturer',
+                manufacturerid: 123,
+                product: 'Test Product',
+                producttype: 'Test ProductType',
+                productid: 321,
+                type: 'test type',
+                name: 'Test Product 123',
+                loc: 112233
+            });
+            var testNode = yashZwaveGateway.getNodes()[4];
+            should.exist(testNode);
+            testNode.should.be.an('object');
+            testNode.manufacturer.should.equal('test manufacturer');
+            testNode.manufacturerid.should.equal(123);
+            testNode.product.should.equal('Test Product');
+            testNode.producttype.should.equal('Test ProductType');
+            testNode.productid.should.equal(321);
+            testNode.type.should.equal('test type');
+            testNode.name.should.equal('Test Product 123');
+            testNode.loc.should.equal(112233);
             done();
         });
 
