@@ -73,6 +73,12 @@ YashZwaveGateway.prototype.start = function() {
             value.value
         );
         nodes[nodeid]['classes'][comclass][value.index] = value;
+        if (messenger) {
+            messenger.sendMessage(
+                'Node '+nodeid+' - '+nodes[nodeid].name,
+                'Value '+value.label+' changed from '+oldValue+' to '+value.value+'.'
+            );
+        }
     });
 
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);

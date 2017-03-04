@@ -244,6 +244,28 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
+        it('should send message when zwave fires value changed event', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+            yashZwaveGateway.start();
+            yashZwaveGateway.addNode(4);
+            var testNode = yashZwaveGateway.getNodes()[4];
+            fireEvent('node ready', 4, {
+                name: 'Test Product 123'
+            });
+            fireEvent('value added', 4, 0x12, {
+                index: 'testIndex',
+                label: 'testLabel',
+                value: 'testValue'
+            });
+            fireEvent('value changed', 4, 0x12, {
+                index: 'testIndex',
+                label: 'testLabel',
+                value: 'newValue'
+            });
+            messenger.sendMessage.should.have.been.calledWith('Node 4 - Test Product 123', 'Value testLabel changed from testValue to newValue.');
+            done();
+        });
+
     });
 
 });
