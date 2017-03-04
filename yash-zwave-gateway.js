@@ -36,8 +36,8 @@ YashZwaveGateway.prototype.start = function() {
     var nodes = this._nodes;
 
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
-        console.log('Node ready: '+nodeid);
         if (nodes[nodeid]) {
+            console.log('Node ready: '+nodeid);
             nodes[nodeid]['manufacturer'] = nodeinfo.manufacturer;
             nodes[nodeid]['manufacturerid'] = nodeinfo.manufacturerid;
             nodes[nodeid]['product'] = nodeinfo.product;
@@ -51,12 +51,27 @@ YashZwaveGateway.prototype.start = function() {
     });
 
     this._zwave.on('value added', function(nodeid, comclass, value) {
-        if (!nodes[nodeid]['classes'][comclass])
+        console.log('Node (id=%d, name=%s) value added: %s= %s',
+            nodeid,
+            nodes[nodeid].name,
+            value.label,
+            value.value
+        );
+        if (!nodes[nodeid]['classes'][comclass]) {
             nodes[nodeid]['classes'][comclass] = {};
+        }
         nodes[nodeid]['classes'][comclass][value.index] = value;
     });
 
     this._zwave.on('value changed', function(nodeid, comclass, value) {
+        var oldValue = nodes[nodeid].classes[comclass][value.index].value;
+        console.log('Node (id=%d, name=%s) value changed: %s= %s -> %s',
+            nodeid,
+            nodes[nodeid].name,
+            value.label,
+            oldValue,
+            value.value
+        );
         nodes[nodeid]['classes'][comclass][value.index] = value;
     });
 
