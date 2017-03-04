@@ -34,6 +34,7 @@ YashZwaveGateway.prototype.start = function() {
     });
 
     var nodes = this._nodes;
+
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
         console.log('Node ready: '+nodeid);
         if (nodes[nodeid]) {
@@ -47,6 +48,12 @@ YashZwaveGateway.prototype.start = function() {
             nodes[nodeid]['loc'] = nodeinfo.loc;
             nodes[nodeid]['ready'] = true;
         }
+    });
+
+    this._zwave.on('value added', function(nodeid, comclass, value) {
+        if (!nodes[nodeid]['classes'][comclass])
+            nodes[nodeid]['classes'][comclass] = {};
+        nodes[nodeid]['classes'][comclass][value.index] = value;
     });
 
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
