@@ -36,15 +36,17 @@ YashZwaveGateway.prototype.start = function() {
     var nodes = this._nodes;
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
         console.log('Node ready: '+nodeid);
-        nodes[nodeid]['manufacturer'] = nodeinfo.manufacturer;
-        nodes[nodeid]['manufacturerid'] = nodeinfo.manufacturerid;
-        nodes[nodeid]['product'] = nodeinfo.product;
-        nodes[nodeid]['producttype'] = nodeinfo.producttype;
-        nodes[nodeid]['productid'] = nodeinfo.productid;
-        nodes[nodeid]['type'] = nodeinfo.type;
-        nodes[nodeid]['name'] = nodeinfo.name;
-        nodes[nodeid]['loc'] = nodeinfo.loc;
-        nodes[nodeid]['ready'] = true;
+        if (nodes[nodeid]) {
+            nodes[nodeid]['manufacturer'] = nodeinfo.manufacturer;
+            nodes[nodeid]['manufacturerid'] = nodeinfo.manufacturerid;
+            nodes[nodeid]['product'] = nodeinfo.product;
+            nodes[nodeid]['producttype'] = nodeinfo.producttype;
+            nodes[nodeid]['productid'] = nodeinfo.productid;
+            nodes[nodeid]['type'] = nodeinfo.type;
+            nodes[nodeid]['name'] = nodeinfo.name;
+            nodes[nodeid]['loc'] = nodeinfo.loc;
+            nodes[nodeid]['ready'] = true;
+        }
     });
 
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);

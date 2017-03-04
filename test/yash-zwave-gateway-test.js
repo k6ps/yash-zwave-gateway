@@ -168,16 +168,7 @@ describe('YashZwaveGateway', function() {
             yashZwaveGateway.start();
             yashZwaveGateway.addNode(4);
             yashZwaveGateway.getNodes()[4].ready.should.equal(false);
-            fireEvent('node ready', 4, {
-                manufacturer: 'test manufacturer',
-                manufacturerid: 123,
-                product: 'Test Product',
-                producttype: 'Test ProductType',
-                productid: 321,
-                type: 'test type',
-                name: 'Test Product 123',
-                loc: 112233
-            });
+            fireEvent('node ready', 4, {});
             yashZwaveGateway.getNodes()[4].ready.should.equal(true);
             done();
         });
