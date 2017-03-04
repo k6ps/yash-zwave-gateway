@@ -220,6 +220,30 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
+        it('should change node value when zwave fires value changed event', function(done) {
+            var yashZwaveGateway = new YashZwaveGateway(zwave);
+            yashZwaveGateway.start();
+            yashZwaveGateway.addNode(4);
+            var testNode = yashZwaveGateway.getNodes()[4];
+            testNode.classes.should.be.empty;
+            fireEvent('value added', 4, 0x12, {
+                index: 'testIndex',
+                label: 'testLabel',
+                value: 'testValue'
+            });
+            fireEvent('value changed', 4, 0x12, {
+                index: 'testIndex',
+                label: 'testLabel',
+                value: 'newValue'
+            });
+            testNode.classes.should.be.an('object');
+            testNode.classes[0x12].should.be.an('object');
+            testNode.classes[0x12]['testIndex'].should.be.an('object');
+            testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
+            testNode.classes[0x12]['testIndex']['value'].should.equal('newValue');
+            done();
+        });
+
     });
 
 });

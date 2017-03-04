@@ -56,6 +56,10 @@ YashZwaveGateway.prototype.start = function() {
         nodes[nodeid]['classes'][comclass][value.index] = value;
     });
 
+    this._zwave.on('value changed', function(nodeid, comclass, value) {
+        nodes[nodeid]['classes'][comclass][value.index] = value;
+    });
+
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
 
 };
