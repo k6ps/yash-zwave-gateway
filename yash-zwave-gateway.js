@@ -11,9 +11,15 @@ function YashZwaveGateway(zwave, messenger) {
 YashZwaveGateway.prototype.start = function() {
     console.log('Connecting to Z-Wave device %s ...', YASH_DEFAULT_ZWAVE_DEVICE);
     var messenger = this._messenger;
-    if (messenger) {
-        messenger.sendMessage('Z-Wave Network','Starting up...');
+    var nodes = this._nodes;
+
+    function sendMessage(sender, body) {
+        if (messenger) {
+            messenger.sendMessage(sender,body);
+        }
     }
+
+    sendMessage('Z-Wave Network','Starting up...');
 
     this._zwave.on('driver ready', function(homeid) {
         console.log('scanning homeid=0x%s...', homeid.toString(16));
@@ -21,61 +27,62 @@ YashZwaveGateway.prototype.start = function() {
 
     this._zwave.on('scan complete', function() {
         console.log('scanning complete.');
-        if (messenger) {
-            messenger.sendMessage('Z-Wave Network','Startup successful, initial network scan complete.');
-        }
+        sendMessage('Z-Wave Network','Startup successful, initial network scan complete.');
     });
 
     this._zwave.on('driver failed', function() {
         console.error('Driver failed.');
-        if (messenger) {
-            messenger.sendMessage('Z-Wave Network','Driver failed, network not started.');
-        }
+        sendMessage('Z-Wave Network','Driver failed, network not started.');
     });
 
     var nodes = this._nodes;
 
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
-        if (nodes[nodeid]) {
+        var node = nodes[nodeid];
+        if (node) {
             console.log('Node ready: '+nodeid);
-            nodes[nodeid]['manufacturer'] = nodeinfo.manufacturer;
-            nodes[nodeid]['manufacturerid'] = nodeinfo.manufacturerid;
-            nodes[nodeid]['product'] = nodeinfo.product;
-            nodes[nodeid]['producttype'] = nodeinfo.producttype;
-            nodes[nodeid]['productid'] = nodeinfo.productid;
-            nodes[nodeid]['type'] = nodeinfo.type;
-            nodes[nodeid]['name'] = nodeinfo.name;
-            nodes[nodeid]['loc'] = nodeinfo.loc;
-            nodes[nodeid]['ready'] = true;
+            node.manufacturer = nodeinfo.manufacturer;
+            node.manufacturerid = nodeinfo.manufacturerid;
+            node.product = nodeinfo.product;
+            node.producttype = nodeinfo.producttype;
+            node.productid = nodeinfo.productid;
+            node.type = nodeinfo.type;
+            node.name = nodeinfo.name;
+            node.loc = nodeinfo.loc;
+            node.ready = true;
         }
     });
 
     this._zwave.on('value added', function(nodeid, comclass, value) {
-        console.log('Node (id=%d, name=%s) value added: %s= %s',
-            nodeid,
-            nodes[nodeid].name,
-            value.label,
-            value.value
-        );
-        if (!nodes[nodeid]['classes'][comclass]) {
-            nodes[nodeid]['classes'][comclass] = {};
+        var node = nodes[nodeid];
+        if (node) {
+            console.log('Node (id=%d, name=%s) value added: %s= %s',
+                nodeid,
+                node.name,
+                value.label,
+                value.value
+            );
+            if (!node.classes[comclass]) {
+                node.classes[comclass] = {};
+            }
+            node.classes[comclass][value.index] = value;
         }
-        nodes[nodeid]['classes'][comclass][value.index] = value;
     });
 
     this._zwave.on('value changed', function(nodeid, comclass, value) {
-        var oldValue = nodes[nodeid].classes[comclass][value.index].value;
-        console.log('Node (id=%d, name=%s) value changed: %s= %s -> %s',
-            nodeid,
-            nodes[nodeid].name,
-            value.label,
-            oldValue,
-            value.value
-        );
-        nodes[nodeid]['classes'][comclass][value.index] = value;
-        if (messenger) {
-            messenger.sendMessage(
-                'Node '+nodeid+' - '+nodes[nodeid].name,
+        var node = nodes[nodeid];
+        if (node) {
+            var oldValue = node.classes[comclass][value.index].value;
+            console.log('Node (id=%d, name=%s) value changed: %s= %s -> %s',
+                nodeid,
+                node.name,
+                value.label,
+                oldValue,
+                value.value
+            );
+            node.classes[comclass][value.index] = value;
+            sendMessage(
+                'Node '+nodeid+' - '+node.name,
                 'Value '+value.label+' changed from '+oldValue+' to '+value.value+'.'
             );
         }
