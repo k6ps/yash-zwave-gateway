@@ -40,7 +40,7 @@ YashZwaveGateway.prototype.start = function() {
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
         var node = nodes[nodeid];
         if (node) {
-            console.log('Node ready: '+nodeid);
+            console.log('Node (id=%d, name=%s) ready', nodeid, node.name);
             node.manufacturer = nodeinfo.manufacturer;
             node.manufacturerid = nodeinfo.manufacturerid;
             node.product = nodeinfo.product;
