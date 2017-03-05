@@ -17,6 +17,7 @@ var messenger = new YashTwitterMessenger();
 describe('YashZwaveGateway', function() {
 
     var zwaveEventCallbacks = {};
+    var yashZwaveGateway;
 
     function registerEventCallback(event, callback) {
         console.log('Registering callback for event: '+event);
@@ -34,50 +35,63 @@ describe('YashZwaveGateway', function() {
         }
     }
 
-    beforeEach(function() {
+    function stubZWave() {
         sinon.stub(zwave, 'connect', function(usbId) {});
         sinon.stub(zwave, 'disconnect', function(usbId) {});
         sinon.stub(zwave, 'on', function(eventName, eventCallback) {
             registerEventCallback(eventName, eventCallback);
         });
-        sinon.stub(messenger, 'sendMessage', function(source, message) {});
-    });
+    }
 
-    afterEach(function() {
+    function stubMessenger() {
+        sinon.stub(messenger, 'sendMessage', function(source, message) {});
+    }
+
+    function restoreZWave() {
         zwave.connect.restore();
         zwave.disconnect.restore();
         zwave.on.restore();
-        clearEventCallbacks();
+    }
+
+    function restoreMessenger() {
         messenger.sendMessage.restore();
+    }
+
+    beforeEach(function() {
+        stubZWave();
+        stubMessenger();
+        yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+    });
+
+    afterEach(function() {
+        restoreZWave();
+        clearEventCallbacks();
+        restoreMessenger();
     });
 
     describe('#start()', function() {
 
-        it('should call zwave.connect with default USB device when started', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
+        beforeEach(function() {
             yashZwaveGateway.start();
+        });
+
+        it('should call zwave.connect with default USB device when started', function(done) {
             zwave.connect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
             done();
         });
 
         it('should send startup message when started', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
-            yashZwaveGateway.start();
             messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Starting up...');
             done();
         });
 
         it('should send success message when started successfully', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
-            yashZwaveGateway.start();
             fireEvent('scan complete');
             messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Startup successful, initial network scan complete.');
             done();
         });
 
         it('should send failure message when driver fails', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
-            yashZwaveGateway.start();
             fireEvent('driver failed');
             messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Driver failed, network not started.');
             done();
@@ -87,16 +101,16 @@ describe('YashZwaveGateway', function() {
 
     describe('#stop()', function() {
 
-        it('should call zwave.disconnect with default USB device when stopped', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
+        beforeEach(function() {
             yashZwaveGateway.stop();
+        });
+
+        it('should call zwave.disconnect with default USB device when stopped', function(done) {
             zwave.disconnect.should.have.been.calledWith(YASH_DEFAULT_ZWAVE_DEVICE);
             done();
         });
 
         it('should send stopped message when stopped', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
-            yashZwaveGateway.stop();
             messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Stopped.');
             done();
         });
@@ -106,17 +120,16 @@ describe('YashZwaveGateway', function() {
     describe('#getNodes()', function() {
 
         it('should have zero nodes after start is called', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
             yashZwaveGateway.getNodes().should.have.lengthOf(0);
             done();
         });
 
         it('should not have nodes with ids 1, 2, 123, and 456 when addNode has never been called after start', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            should.not.exist(yashZwaveGateway.getNodes()[1]);
-            should.not.exist(yashZwaveGateway.getNodes()[2]);
-            should.not.exist(yashZwaveGateway.getNodes()[123]);
-            should.not.exist(yashZwaveGateway.getNodes()[456]);
+            var nodes = yashZwaveGateway.getNodes();
+            should.not.exist(nodes[1]);
+            should.not.exist(nodes[2]);
+            should.not.exist(nodes[123]);
+            should.not.exist(nodes[456]);
             done();
         });
 
@@ -125,7 +138,6 @@ describe('YashZwaveGateway', function() {
     describe('#addNode()', function() {
 
         it('should have the node with given ID and all empty details when addNode is called', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
             yashZwaveGateway.addNode(1);
             var testNode = yashZwaveGateway.getNodes()[1];
             should.exist(testNode);
@@ -144,7 +156,6 @@ describe('YashZwaveGateway', function() {
         });
 
         it('should have three nodes with given IDs after addNode is called three times', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
             should.not.exist(yashZwaveGateway.getNodes()[4]);
             should.not.exist(yashZwaveGateway.getNodes()[13]);
             should.not.exist(yashZwaveGateway.getNodes()[257]);
@@ -163,107 +174,101 @@ describe('YashZwaveGateway', function() {
             done();
         });
 
-        it('should mark node as ready when zwave fires node ready event', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start();
-            yashZwaveGateway.addNode(4);
-            yashZwaveGateway.getNodes()[4].ready.should.equal(false);
-            fireEvent('node ready', 4, {});
-            yashZwaveGateway.getNodes()[4].ready.should.equal(true);
-            done();
-        });
+        describe('on node events', function() {
 
-        it('should set node details when zwave fires node ready event', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start();
-            yashZwaveGateway.addNode(4);
-            fireEvent('node ready', 4, {
-                manufacturer: 'test manufacturer',
-                manufacturerid: 123,
-                product: 'Test Product',
-                producttype: 'Test ProductType',
-                productid: 321,
-                type: 'test type',
-                name: 'Test Product 123',
-                loc: 112233
-            });
-            var testNode = yashZwaveGateway.getNodes()[4];
-            should.exist(testNode);
-            testNode.should.be.an('object');
-            testNode.manufacturer.should.equal('test manufacturer');
-            testNode.manufacturerid.should.equal(123);
-            testNode.product.should.equal('Test Product');
-            testNode.producttype.should.equal('Test ProductType');
-            testNode.productid.should.equal(321);
-            testNode.type.should.equal('test type');
-            testNode.name.should.equal('Test Product 123');
-            testNode.loc.should.equal(112233);
-            done();
-        });
+            const TEST_NODE_ID = 4;
+            var testNode;
 
-        it('should add node value when zwave fires value added event', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start();
-            yashZwaveGateway.addNode(4);
-            var testNode = yashZwaveGateway.getNodes()[4];
-            testNode.classes.should.be.empty;
-            fireEvent('value added', 4, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
+            beforeEach(function() {
+                yashZwaveGateway.start();
+                yashZwaveGateway.addNode(TEST_NODE_ID);
+                testNode = yashZwaveGateway.getNodes()[TEST_NODE_ID];
             });
-            testNode.classes.should.be.an('object');
-            testNode.classes[0x12].should.be.an('object');
-            testNode.classes[0x12]['testIndex'].should.be.an('object');
-            testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
-            testNode.classes[0x12]['testIndex']['value'].should.equal('testValue');
-            done();
-        });
 
-        it('should change node value when zwave fires value changed event', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave);
-            yashZwaveGateway.start();
-            yashZwaveGateway.addNode(4);
-            var testNode = yashZwaveGateway.getNodes()[4];
-            testNode.classes.should.be.empty;
-            fireEvent('value added', 4, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
+            it('should mark node as ready when zwave fires node ready event', function(done) {
+                testNode.ready.should.equal(false);
+                fireEvent('node ready', TEST_NODE_ID, {});
+                testNode.ready.should.equal(true);
+                done();
             });
-            fireEvent('value changed', 4, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'newValue'
-            });
-            testNode.classes.should.be.an('object');
-            testNode.classes[0x12].should.be.an('object');
-            testNode.classes[0x12]['testIndex'].should.be.an('object');
-            testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
-            testNode.classes[0x12]['testIndex']['value'].should.equal('newValue');
-            done();
-        });
 
-        it('should send message when zwave fires value changed event', function(done) {
-            var yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
-            yashZwaveGateway.start();
-            yashZwaveGateway.addNode(4);
-            var testNode = yashZwaveGateway.getNodes()[4];
-            fireEvent('node ready', 4, {
-                name: 'Test Product 123'
+            it('should set node details when zwave fires node ready event', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {
+                    manufacturer: 'test manufacturer',
+                    manufacturerid: 123,
+                    product: 'Test Product',
+                    producttype: 'Test ProductType',
+                    productid: 321,
+                    type: 'test type',
+                    name: 'Test Product 123',
+                    loc: 112233
+                });
+                should.exist(testNode);
+                testNode.should.be.an('object');
+                testNode.manufacturer.should.equal('test manufacturer');
+                testNode.manufacturerid.should.equal(123);
+                testNode.product.should.equal('Test Product');
+                testNode.producttype.should.equal('Test ProductType');
+                testNode.productid.should.equal(321);
+                testNode.type.should.equal('test type');
+                testNode.name.should.equal('Test Product 123');
+                testNode.loc.should.equal(112233);
+                done();
             });
-            fireEvent('value added', 4, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
+
+            it('should add node value when zwave fires value added event', function(done) {
+                testNode.classes.should.be.empty;
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                testNode.classes.should.be.an('object');
+                testNode.classes[0x12].should.be.an('object');
+                testNode.classes[0x12]['testIndex'].should.be.an('object');
+                testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
+                testNode.classes[0x12]['testIndex']['value'].should.equal('testValue');
+                done();
             });
-            fireEvent('value changed', 4, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'newValue'
+
+            it('should change node value when zwave fires value changed event', function(done) {
+                testNode.classes.should.be.empty;
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                testNode.classes.should.be.an('object');
+                testNode.classes[0x12].should.be.an('object');
+                testNode.classes[0x12]['testIndex'].should.be.an('object');
+                testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
+                testNode.classes[0x12]['testIndex']['value'].should.equal('newValue');
+                done();
             });
-            messenger.sendMessage.should.have.been.calledWith('Node 4 - Test Product 123', 'Value testLabel changed from testValue to newValue.');
-            done();
+
+            it('should send message when zwave fires value changed event', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {
+                    name: 'Test Product 123'
+                });
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to newValue.');
+                done();
+            });
+
         });
 
     });
