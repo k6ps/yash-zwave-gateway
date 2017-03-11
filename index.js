@@ -13,7 +13,10 @@ var YashTwitterMessenger = require('./yash-twitter-messenger.js');
 var yashTwitterMessenger = new YashTwitterMessenger(twitter);
 
 var ZWave = require('openzwave-shared');
-var zwave = new ZWave();
+var zwave = new ZWave({
+    Logging: false,
+    ConsoleOutput: true
+});
 
 var YashZwaveGateway = require('./yash-zwave-gateway.js');
 var yashZwaveGateway = new YashZwaveGateway(zwave, yashTwitterMessenger);
