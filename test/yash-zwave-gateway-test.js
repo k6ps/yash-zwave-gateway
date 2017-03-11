@@ -292,6 +292,24 @@ describe('YashZwaveGateway', function() {
                 done();
             });
 
+            it('should not send message when node is ready and zwave fires value changed event and new value equals old value', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {
+                    name: 'Test Product 123'
+                });
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to testValue.');
+                done();
+            });
+
         });
 
     });

@@ -86,7 +86,7 @@ YashZwaveGateway.prototype.start = function() {
                 value.value
             );
             node.classes[comclass][value.index] = value;
-            if (node.ready) {
+            if (node.ready && value.value != oldValue) {
                 sendMessage(
                     'Node '+nodeid+' - '+node.name,
                     'Value '+value.label+' changed from '+oldValue+' to '+value.value+'.'
