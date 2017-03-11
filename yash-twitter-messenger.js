@@ -14,7 +14,6 @@ YashTwitterMessenger.prototype.sendMessage = function(source, content) {
             } else {
                 console.log('Successfully sent message via Twitter.');
             };
-            console.log(response);
         });
     }
 };
