@@ -88,6 +88,11 @@ YashZwaveGateway.prototype.start = function() {
         }
     });
 
+    zwave.on('node event', function(nodeid, data) {
+        console.log('=== node%d: node event received', nodeid);
+        console.log(data);
+    });
+
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
 
 };
