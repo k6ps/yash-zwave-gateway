@@ -56,9 +56,10 @@ YashZwaveGateway.prototype.start = function() {
     this._zwave.on('value added', function(nodeid, comclass, value) {
         var node = nodes[nodeid];
         if (node) {
-            console.log('Node (id=%d, name=%s) value added: %s= %s',
+            console.log('Node (id=%d, name=%s) commclass %d value added: %s= %s',
                 nodeid,
                 node.name,
+                comclass,
                 value.label,
                 value.value
             );
@@ -73,9 +74,10 @@ YashZwaveGateway.prototype.start = function() {
         var node = nodes[nodeid];
         if (node) {
             var oldValue = node.classes[comclass][value.index].value;
-            console.log('Node (id=%d, name=%s) value changed: %s= %s -> %s',
+            console.log('Node (id=%d, name=%s) commclass %d value changed: %s= %s -> %s',
                 nodeid,
                 node.name,
+                comclass,
                 value.label,
                 oldValue,
                 value.value

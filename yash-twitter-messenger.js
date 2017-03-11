@@ -10,7 +10,7 @@ YashTwitterMessenger.prototype.sendMessage = function(source, content) {
         this._twitter.post('statuses/update', {status: source + ': ' + content}, function(error, tweet, response) {
             if(error) {
                 console.log('Failed to send message via Twitter.');
-                console.error(error);
+                console.log(error);
             } else {
                 console.log('Successfully sent message via Twitter.');
             };
