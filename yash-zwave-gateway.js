@@ -71,6 +71,7 @@ YashZwaveGateway.prototype.start = function() {
     });
 
     this._zwave.on('value changed', function(nodeid, comclass, value) {
+        console.log('===> Value changed!');
         var node = nodes[nodeid];
         if (node) {
             var oldValue = node.classes[comclass][value.index].value;
