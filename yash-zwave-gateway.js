@@ -88,7 +88,7 @@ YashZwaveGateway.prototype.start = function() {
         }
     });
 
-    zwave.on('node event', function(nodeid, data) {
+    this._zwave.on('node event', function(nodeid, data) {
         console.log('=== node%d: node event received', nodeid);
         console.log(data);
     });
