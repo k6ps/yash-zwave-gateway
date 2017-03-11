@@ -38,6 +38,7 @@ YashZwaveGateway.prototype.start = function() {
     var nodes = this._nodes;
 
     this._zwave.on('node ready', function(nodeid, nodeinfo) {
+        console.log('===> Node ready! nodeid=%d', nodeid);
         var node = nodes[nodeid];
         if (node) {
             console.log('Node (id=%d, name=%s) ready', nodeid, node.name);
@@ -54,6 +55,7 @@ YashZwaveGateway.prototype.start = function() {
     });
 
     this._zwave.on('value added', function(nodeid, comclass, value) {
+        console.log('===> Value added! nodeid=%d, comclass=%d, value=%s', nodeid, comclass, value);
         var node = nodes[nodeid];
         if (node) {
             console.log('Node (id=%d, name=%s) commclass %d value added: %s= %s',
@@ -94,8 +96,24 @@ YashZwaveGateway.prototype.start = function() {
     });
 
     this._zwave.on('node event', function(nodeid, data) {
-        console.log('=== node%d: node event received', nodeid);
+        console.log('===> Node event! nodeid=%d, data=%d', nodeid, data);
         console.log(data);
+    });
+
+    this._zwave.on('node added', function(nodeid) {
+        console.log('===> Node added! nodeid=%d', nodeid);
+        nodes[nodeid] = {
+            manufacturer: '',
+            manufacturerid: '',
+            product: '',
+            producttype: '',
+            productid: '',
+            type: '',
+            name: '',
+            loc: '',
+            classes: {},
+            ready: false
+        };
     });
 
     this._zwave.connect(YASH_DEFAULT_ZWAVE_DEVICE);
@@ -111,21 +129,6 @@ YashZwaveGateway.prototype.stop = function() {
 
 YashZwaveGateway.prototype.getNodes = function() {
     return this._nodes;
-};
-
-YashZwaveGateway.prototype.addNode = function(nodeId) {
-    this._nodes[nodeId] = {
-        manufacturer: '',
-        manufacturerid: '',
-        product: '',
-        producttype: '',
-        productid: '',
-        type: '',
-        name: '',
-        loc: '',
-        classes: {},
-        ready: false
-    };
 };
 
 module.exports = YashZwaveGateway;
