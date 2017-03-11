@@ -135,7 +135,7 @@ describe('YashZwaveGateway', function() {
 
     });
 
-    describe('on node events', function() {
+    describe('node events', function() {
 
         const TEST_NODE_ID = 4;
         var testNode;
@@ -146,121 +146,137 @@ describe('YashZwaveGateway', function() {
             testNode = yashZwaveGateway.getNodes()[TEST_NODE_ID];
         });
 
-        it('should have the node with given ID and all empty details when zwave fires node added event', function(done) {
-            should.exist(testNode);
-            testNode.should.be.an('object');
-            testNode.manufacturer.should.equal('');
-            testNode.manufacturerid.should.equal('');
-            testNode.product.should.equal('');
-            testNode.producttype.should.equal('');
-            testNode.productid.should.equal('');
-            testNode.type.should.equal('');
-            testNode.name.should.equal('');
-            testNode.loc.should.equal('');
-            testNode.classes.should.be.empty;
-            testNode.ready.should.equal(false);
-            done();
+        describe('node added', function() {
+
+            it('should have the node with given ID and all empty details when zwave fires node added event', function(done) {
+                should.exist(testNode);
+                testNode.should.be.an('object');
+                testNode.manufacturer.should.equal('');
+                testNode.manufacturerid.should.equal('');
+                testNode.product.should.equal('');
+                testNode.producttype.should.equal('');
+                testNode.productid.should.equal('');
+                testNode.type.should.equal('');
+                testNode.name.should.equal('');
+                testNode.loc.should.equal('');
+                testNode.classes.should.be.empty;
+                testNode.ready.should.equal(false);
+                done();
+            });
+
+            it('should have three nodes with given IDs after zwave fires node added event three times', function(done) {
+                should.not.exist(yashZwaveGateway.getNodes()[13]);
+                should.not.exist(yashZwaveGateway.getNodes()[257]);
+                fireEvent('node added', 13);
+                fireEvent('node added', 257);
+                testNode.should.be.an('object');
+                yashZwaveGateway.getNodes()[13].should.be.an('object');
+                yashZwaveGateway.getNodes()[257].should.be.an('object');
+                should.not.exist(yashZwaveGateway.getNodes()[0]);
+                should.not.exist(yashZwaveGateway.getNodes()[2]);
+                should.not.exist(yashZwaveGateway.getNodes()[3]);
+                should.not.exist(yashZwaveGateway.getNodes()[5]);
+                should.not.exist(yashZwaveGateway.getNodes()[11]);
+                should.not.exist(yashZwaveGateway.getNodes()[258]);
+                done();
+            });
+
+        });
+        
+        describe('node ready', function() {
+
+            it('should mark node as ready when zwave fires node ready event', function(done) {
+                testNode.ready.should.equal(false);
+                fireEvent('node ready', TEST_NODE_ID, {});
+                testNode.ready.should.equal(true);
+                done();
+            });
+
+            it('should set node details when zwave fires node ready event', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {
+                    manufacturer: 'test manufacturer',
+                    manufacturerid: 123,
+                    product: 'Test Product',
+                    producttype: 'Test ProductType',
+                    productid: 321,
+                    type: 'test type',
+                    name: 'Test Product 123',
+                    loc: 112233
+                });
+                should.exist(testNode);
+                testNode.should.be.an('object');
+                testNode.manufacturer.should.equal('test manufacturer');
+                testNode.manufacturerid.should.equal(123);
+                testNode.product.should.equal('Test Product');
+                testNode.producttype.should.equal('Test ProductType');
+                testNode.productid.should.equal(321);
+                testNode.type.should.equal('test type');
+                testNode.name.should.equal('Test Product 123');
+                testNode.loc.should.equal(112233);
+                done();
+            });
+
         });
 
-        it('should have three nodes with given IDs after zwave fires node added event three times', function(done) {
-            should.not.exist(yashZwaveGateway.getNodes()[13]);
-            should.not.exist(yashZwaveGateway.getNodes()[257]);
-            fireEvent('node added', 13);
-            fireEvent('node added', 257);
-            testNode.should.be.an('object');
-            yashZwaveGateway.getNodes()[13].should.be.an('object');
-            yashZwaveGateway.getNodes()[257].should.be.an('object');
-            should.not.exist(yashZwaveGateway.getNodes()[0]);
-            should.not.exist(yashZwaveGateway.getNodes()[2]);
-            should.not.exist(yashZwaveGateway.getNodes()[3]);
-            should.not.exist(yashZwaveGateway.getNodes()[5]);
-            should.not.exist(yashZwaveGateway.getNodes()[11]);
-            should.not.exist(yashZwaveGateway.getNodes()[258]);
-            done();
+        describe('value added', function() {
+
+            it('should add node value when zwave fires value added event', function(done) {
+                testNode.classes.should.be.empty;
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                testNode.classes.should.be.an('object');
+                testNode.classes[0x12].should.be.an('object');
+                testNode.classes[0x12]['testIndex'].should.be.an('object');
+                testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
+                testNode.classes[0x12]['testIndex']['value'].should.equal('testValue');
+                done();
+            });
+
         });
 
-        it('should mark node as ready when zwave fires node ready event', function(done) {
-            testNode.ready.should.equal(false);
-            fireEvent('node ready', TEST_NODE_ID, {});
-            testNode.ready.should.equal(true);
-            done();
-        });
+        describe('value changed', function() {
 
-        it('should set node details when zwave fires node ready event', function(done) {
-            fireEvent('node ready', TEST_NODE_ID, {
-                manufacturer: 'test manufacturer',
-                manufacturerid: 123,
-                product: 'Test Product',
-                producttype: 'Test ProductType',
-                productid: 321,
-                type: 'test type',
-                name: 'Test Product 123',
-                loc: 112233
+            it('should change node value when zwave fires value changed event', function(done) {
+                testNode.classes.should.be.empty;
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                testNode.classes.should.be.an('object');
+                testNode.classes[0x12].should.be.an('object');
+                testNode.classes[0x12]['testIndex'].should.be.an('object');
+                testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
+                testNode.classes[0x12]['testIndex']['value'].should.equal('newValue');
+                done();
             });
-            should.exist(testNode);
-            testNode.should.be.an('object');
-            testNode.manufacturer.should.equal('test manufacturer');
-            testNode.manufacturerid.should.equal(123);
-            testNode.product.should.equal('Test Product');
-            testNode.producttype.should.equal('Test ProductType');
-            testNode.productid.should.equal(321);
-            testNode.type.should.equal('test type');
-            testNode.name.should.equal('Test Product 123');
-            testNode.loc.should.equal(112233);
-            done();
-        });
 
-        it('should add node value when zwave fires value added event', function(done) {
-            testNode.classes.should.be.empty;
-            fireEvent('value added', TEST_NODE_ID, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
+            it('should send message when zwave fires value changed event', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {
+                    name: 'Test Product 123'
+                });
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to newValue.');
+                done();
             });
-            testNode.classes.should.be.an('object');
-            testNode.classes[0x12].should.be.an('object');
-            testNode.classes[0x12]['testIndex'].should.be.an('object');
-            testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
-            testNode.classes[0x12]['testIndex']['value'].should.equal('testValue');
-            done();
-        });
 
-        it('should change node value when zwave fires value changed event', function(done) {
-            testNode.classes.should.be.empty;
-            fireEvent('value added', TEST_NODE_ID, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
-            });
-            fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'newValue'
-            });
-            testNode.classes.should.be.an('object');
-            testNode.classes[0x12].should.be.an('object');
-            testNode.classes[0x12]['testIndex'].should.be.an('object');
-            testNode.classes[0x12]['testIndex']['label'].should.equal('testLabel');
-            testNode.classes[0x12]['testIndex']['value'].should.equal('newValue');
-            done();
-        });
-
-        it('should send message when zwave fires value changed event', function(done) {
-            fireEvent('node ready', TEST_NODE_ID, {
-                name: 'Test Product 123'
-            });
-            fireEvent('value added', TEST_NODE_ID, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'testValue'
-            });
-            fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                index: 'testIndex',
-                label: 'testLabel',
-                value: 'newValue'
-            });
-            messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to newValue.');
-            done();
         });
 
     });
