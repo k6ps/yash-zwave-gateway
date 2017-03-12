@@ -260,8 +260,25 @@ describe('YashZwaveGateway', function() {
             });
 
             it('should send message when node is ready and zwave fires value changed event', function(done) {
+                fireEvent('node ready', TEST_NODE_ID, {});
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
+                done();
+            });
+
+            it('should use node name in message when zwave fires value changed event', function(done) {
+                const TEST_NODE_NAME = 'Test Product 123';
                 fireEvent('node ready', TEST_NODE_ID, {
-                    name: 'Test Product 123'
+                    name: TEST_NODE_NAME
                 });
                 fireEvent('value added', TEST_NODE_ID, 0x12, {
                     index: 'testIndex',
@@ -273,7 +290,7 @@ describe('YashZwaveGateway', function() {
                     label: 'testLabel',
                     value: 'newValue'
                 });
-                messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to newValue.');
+                messenger.sendMessage.should.have.been.calledWith(TEST_NODE_NAME, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
 
@@ -288,14 +305,12 @@ describe('YashZwaveGateway', function() {
                     label: 'testLabel',
                     value: 'newValue'
                 });
-                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to newValue.');
+                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
 
             it('should not send message when node is ready and zwave fires value changed event and new value equals old value', function(done) {
-                fireEvent('node ready', TEST_NODE_ID, {
-                    name: 'Test Product 123'
-                });
+                fireEvent('node ready', TEST_NODE_ID, {});
                 fireEvent('value added', TEST_NODE_ID, 0x12, {
                     index: 'testIndex',
                     label: 'testLabel',
@@ -306,7 +321,7 @@ describe('YashZwaveGateway', function() {
                     label: 'testLabel',
                     value: 'testValue'
                 });
-                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID+' - Test Product 123', 'Value testLabel changed from testValue to testValue.');
+                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to testValue.');
                 done();
             });
 

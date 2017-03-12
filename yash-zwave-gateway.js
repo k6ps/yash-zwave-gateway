@@ -19,6 +19,14 @@ YashZwaveGateway.prototype.start = function() {
         }
     }
 
+    function getNodeName(node, nodeid) {
+        if (node.name) {
+            return node.name;
+        } else {
+            return 'Node '+nodeid;
+        }
+    }
+
     sendMessage('Z-Wave Network','Starting up...');
 
     this._zwave.on('driver ready', function(homeid) {
@@ -88,7 +96,7 @@ YashZwaveGateway.prototype.start = function() {
             node.classes[comclass][value.index] = value;
             if (node.ready && value.value != oldValue) {
                 sendMessage(
-                    'Node '+nodeid+' - '+node.name,
+                    getNodeName(node, nodeid),
                     'Value '+value.label+' changed from '+oldValue+' to '+value.value+'.'
                 );
             }
