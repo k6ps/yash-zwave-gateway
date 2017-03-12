@@ -239,18 +239,26 @@ describe('YashZwaveGateway', function() {
 
         describe('value changed', function() {
 
+            function fireValueAdded(nodeid, value) {
+                fireEvent('value added', nodeid, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: value
+                });
+            }
+
+            function fireValueChanged(nodeid, value) {
+                fireEvent('value changed', nodeid, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: value
+                });
+            }
+
             it('should change node value when zwave fires value changed event', function(done) {
                 testNode.classes.should.be.empty;
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'newValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'newValue');
                 testNode.classes.should.be.an('object');
                 testNode.classes[0x12].should.be.an('object');
                 testNode.classes[0x12]['testIndex'].should.be.an('object');
@@ -261,16 +269,8 @@ describe('YashZwaveGateway', function() {
 
             it('should send message when node is ready and zwave fires value changed event', function(done) {
                 fireEvent('node ready', TEST_NODE_ID, {});
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'newValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'newValue');
                 messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
@@ -280,16 +280,8 @@ describe('YashZwaveGateway', function() {
                 fireEvent('node ready', TEST_NODE_ID, {
                     name: TEST_NODE_NAME
                 });
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'newValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'newValue');
                 messenger.sendMessage.should.have.been.calledWith(TEST_NODE_NAME, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
@@ -301,47 +293,23 @@ describe('YashZwaveGateway', function() {
                     manufacturer: TEST_NODE_MANUFACTURER,
                     product: TEST_NODE_PRODUCT
                 });
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'newValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'newValue');
                 messenger.sendMessage.should.have.been.calledWith(TEST_NODE_MANUFACTURER+' '+TEST_NODE_PRODUCT, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
 
             it('should not send message when node is not ready and zwave fires value changed event', function(done) {
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'newValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'newValue');
                 messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
                 done();
             });
 
             it('should not send message when node is ready and zwave fires value changed event and new value equals old value', function(done) {
                 fireEvent('node ready', TEST_NODE_ID, {});
-                fireEvent('value added', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
-                fireEvent('value changed', TEST_NODE_ID, 0x12, {
-                    index: 'testIndex',
-                    label: 'testLabel',
-                    value: 'testValue'
-                });
+                fireValueAdded(TEST_NODE_ID, 'testValue');
+                fireValueChanged(TEST_NODE_ID, 'testValue');
                 messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to testValue.');
                 done();
             });
