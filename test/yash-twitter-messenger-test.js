@@ -34,6 +34,19 @@ describe('YashTwitterMessenger', function() {
             done();
         });
 
+        it('should truncate message at Twitters message length limit when message is sent', function(done) {
+            const MAX_LENGTH = 140;
+            const TEST_MESSAGE = 'test content and some more test content ant then a few more and finally just a little more and finally taruiraraa nadinunnadinaa ja hopsa-hopsa-hopsassaa ja siis veel mingi pikk jutt sitt jutt.'
+            var expectedMessage = ('testSender: '+TEST_MESSAGE).substr(0, MAX_LENGTH-3).concat('...');
+            var messenger = new YashTwitterMessenger(twitter);
+            messenger.sendMessage(
+                'testSender',
+                TEST_MESSAGE
+            );
+            twitter.post.should.have.been.calledWith('statuses/update', {status: expectedMessage});
+            done();
+        });
+
     });
 
 });
