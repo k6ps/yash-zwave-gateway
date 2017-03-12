@@ -22,6 +22,8 @@ YashZwaveGateway.prototype.start = function() {
     function getNodeName(node, nodeid) {
         if (node.name) {
             return node.name;
+        } else if (node.manufacturer || node.product) {
+            return [node.manufacturer, node.product].join(' ');
         } else {
             return 'Node '+nodeid;
         }

@@ -294,6 +294,27 @@ describe('YashZwaveGateway', function() {
                 done();
             });
 
+            it('should use node manufacturer and product in message when zwave fires value changed event and name is not given', function(done) {
+                const TEST_NODE_MANUFACTURER = 'TestCo. Ltd.';
+                const TEST_NODE_PRODUCT = 'HyperCoolTestProduct 2'
+                fireEvent('node ready', TEST_NODE_ID, {
+                    manufacturer: TEST_NODE_MANUFACTURER,
+                    product: TEST_NODE_PRODUCT
+                });
+                fireEvent('value added', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'testValue'
+                });
+                fireEvent('value changed', TEST_NODE_ID, 0x12, {
+                    index: 'testIndex',
+                    label: 'testLabel',
+                    value: 'newValue'
+                });
+                messenger.sendMessage.should.have.been.calledWith(TEST_NODE_MANUFACTURER+' '+TEST_NODE_PRODUCT, 'Value testLabel changed from testValue to newValue.');
+                done();
+            });
+
             it('should not send message when node is not ready and zwave fires value changed event', function(done) {
                 fireEvent('value added', TEST_NODE_ID, 0x12, {
                     index: 'testIndex',
