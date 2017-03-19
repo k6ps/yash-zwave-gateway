@@ -4,11 +4,11 @@ function YashSimpleEventBus() {
     this._eventListeners = [];
 }
 
-YashSimpleEventBus.prototype.fireEvent = function(source,time,data) {
+YashSimpleEventBus.prototype.fireEvent = function(event) {
     for (var i=0; i< this._eventListeners.length; i++) {
         var eventListener = this._eventListeners[i];
         if (eventListener.onEvent) {
-            eventListener.onEvent();
+            eventListener.onEvent(event);
         }
     }
 }

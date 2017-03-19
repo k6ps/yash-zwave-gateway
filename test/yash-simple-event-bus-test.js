@@ -54,7 +54,7 @@ describe('YashSimpleEventBus', function() {
 
         it('should not fail when there are no event listeners and  event is fired', function(done) {
             var yashSimpleEventBus = new YashSimpleEventBus();
-            yashSimpleEventBus.fireEvent('some source', new Date());
+            yashSimpleEventBus.fireEvent({});
             done();       
         });
 
@@ -66,8 +66,28 @@ describe('YashSimpleEventBus', function() {
             sinon.spy(testEventListener, 'onEvent');
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.addEventListener(testEventListener);
-            yashSimpleEventBus.fireEvent('some source', new Date());
+            yashSimpleEventBus.fireEvent({});
             testEventListener.onEvent.should.have.been.called;
+            done();       
+        });
+
+        it('should include the correct event data with call to event listener when event is fired', function(done) {
+            var testEventListener = {
+                name: 'testEventListener',
+                onEvent: function() {}
+            };
+            var testEventTime = new Date(2012,2,28,13,23,58,122);
+            sinon.spy(testEventListener, 'onEvent');
+            var yashSimpleEventBus = new YashSimpleEventBus();
+            yashSimpleEventBus.addEventListener(testEventListener);
+            yashSimpleEventBus.fireEvent({
+                source: 'some source', 
+                time: testEventTime,
+                stuff: 'Blahh'
+            });
+            testEventListener.onEvent.getCall(0).args[0].source.should.equal('some source');
+            testEventListener.onEvent.getCall(0).args[0].time.should.equal(testEventTime);
+            testEventListener.onEvent.getCall(0).args[0].stuff.should.equal('Blahh');
             done();       
         });
 
@@ -85,7 +105,7 @@ describe('YashSimpleEventBus', function() {
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.addEventListener(testEventListener);
             yashSimpleEventBus.addEventListener(testEventListener2);
-            yashSimpleEventBus.fireEvent('some source', new Date());
+            yashSimpleEventBus.fireEvent({});
             testEventListener.onEvent.should.have.been.called;
             testEventListener2.onEvent.should.have.been.called;
             done();       
@@ -97,7 +117,7 @@ describe('YashSimpleEventBus', function() {
             };
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.addEventListener(testEventListener);
-            yashSimpleEventBus.fireEvent('some source', new Date());
+            yashSimpleEventBus.fireEvent({});
             done();       
         });
 
