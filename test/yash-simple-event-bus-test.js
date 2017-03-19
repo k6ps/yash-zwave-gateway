@@ -63,7 +63,7 @@ describe('YashSimpleEventBus', function() {
                 name: 'testEventListener',
                 onEvent: function() {}
             };
-            sinon.stub(testEventListener, 'onEvent', function() {});
+            sinon.spy(testEventListener, 'onEvent');
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.addEventListener(testEventListener);
             yashSimpleEventBus.fireEvent('some source', new Date());
@@ -80,8 +80,8 @@ describe('YashSimpleEventBus', function() {
                 name: 'testEventListener2',
                 onEvent: function() {}
             };
-            sinon.stub(testEventListener, 'onEvent', function() {});
-            sinon.stub(testEventListener2, 'onEvent', function() {});
+            sinon.spy(testEventListener, 'onEvent');
+            sinon.spy(testEventListener2, 'onEvent');
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.addEventListener(testEventListener);
             yashSimpleEventBus.addEventListener(testEventListener2);
