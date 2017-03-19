@@ -12,14 +12,21 @@ var twitter = new Twitter({
 var YashTwitterMessenger = require('./yash-twitter-messenger.js');
 var yashTwitterMessenger = new YashTwitterMessenger(twitter);
 
+var YashAlerter = require('./yash-alerter.js');
+var yashAlerter = new YashAlerter(yashTwitterMessenger);
+
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave({
     Logging: false,
     ConsoleOutput: true
 });
 
+var YashSimpleEventBus = require('./yash-simple-event-bus.js');
+var yashSimpleEventBus = new YashSimpleEventBus();
+yashSimpleEventBus.addEventListener(yashAlerter);
+
 var YashZwaveGateway = require('./yash-zwave-gateway.js');
-var yashZwaveGateway = new YashZwaveGateway(zwave, yashTwitterMessenger);
+var yashZwaveGateway = new YashZwaveGateway(zwave, yashSimpleEventBus);
 
 yashZwaveGateway.start();
 

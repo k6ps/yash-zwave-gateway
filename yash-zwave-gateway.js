@@ -2,22 +2,26 @@
 
 const YASH_DEFAULT_ZWAVE_DEVICE = '/dev/ttyUSB0';
 
-function YashZwaveGateway(zwave, messenger) {
+function fireEvent(eventBus, source, body) {
+    if (eventBus) {
+        eventBus.fireEvent({
+            source: source,
+            time: new Date(),
+            body: body
+        });
+    }
+}
+
+function YashZwaveGateway(zwave, eventBus) {
     this._zwave = zwave;
     this._nodes = [];
-    this._messenger = messenger;
+    this._eventBus = eventBus;
 }
 
 YashZwaveGateway.prototype.start = function() {
     console.log('Connecting to Z-Wave device %s ...', YASH_DEFAULT_ZWAVE_DEVICE);
-    var messenger = this._messenger;
+    var eventBus = this._eventBus;
     var nodes = this._nodes;
-
-    function sendMessage(sender, body) {
-        if (messenger) {
-            messenger.sendMessage(sender,body);
-        }
-    }
 
     function getNodeName(node, nodeid) {
         if (node.name) {
@@ -29,7 +33,7 @@ YashZwaveGateway.prototype.start = function() {
         }
     }
 
-    sendMessage('Z-Wave Network','Starting up...');
+    fireEvent(eventBus,'Z-Wave Network','Starting up...');
 
     this._zwave.on('driver ready', function(homeid) {
         console.log('scanning homeid=0x%s...', homeid.toString(16));
@@ -37,12 +41,12 @@ YashZwaveGateway.prototype.start = function() {
 
     this._zwave.on('scan complete', function() {
         console.log('scanning complete.');
-        sendMessage('Z-Wave Network','Startup successful, initial network scan complete.');
+        fireEvent(eventBus, 'Z-Wave Network','Startup successful, initial network scan complete.');
     });
 
     this._zwave.on('driver failed', function() {
         console.error('Driver failed.');
-        sendMessage('Z-Wave Network','Driver failed, network not started.');
+        fireEvent(eventBus, 'Z-Wave Network','Driver failed, network not started.');
     });
 
     var nodes = this._nodes;
@@ -97,7 +101,8 @@ YashZwaveGateway.prototype.start = function() {
             );
             node.classes[comclass][value.index] = value;
             if (node.ready && value.value != oldValue) {
-                sendMessage(
+                fireEvent(
+                    eventBus,
                     getNodeName(node, nodeid),
                     'Value '+value.label+' changed from '+oldValue+' to '+value.value+'.'
                 );
@@ -132,9 +137,7 @@ YashZwaveGateway.prototype.start = function() {
 
 YashZwaveGateway.prototype.stop = function() {
     this._zwave.disconnect(YASH_DEFAULT_ZWAVE_DEVICE);
-    if (this._messenger) {
-        this._messenger.sendMessage('Z-Wave Network','Stopped.');
-    }
+    fireEvent(this._eventBus, 'Z-Wave Network', 'Stopped.');
 };
 
 YashZwaveGateway.prototype.getNodes = function() {

@@ -11,13 +11,15 @@ var should = chai.should();
 var YashZwaveGateway = require('./../yash-zwave-gateway.js');
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave();
-var YashTwitterMessenger = require('./../yash-twitter-messenger.js');
-var messenger = new YashTwitterMessenger();
+var YashSimpleEventBus = require('./../yash-simple-event-bus.js');
+var eventBus = new YashSimpleEventBus();
 
 describe('YashZwaveGateway', function() {
 
     var zwaveEventCallbacks = {};
     var yashZwaveGateway;
+    var oneMinuteLater;
+    var oneMinuteAgo;
 
     function registerEventCallback(event, callback) {
         console.log('Registering callback for event: '+event);
@@ -43,8 +45,8 @@ describe('YashZwaveGateway', function() {
         });
     }
 
-    function stubMessenger() {
-        sinon.stub(messenger, 'sendMessage', function(source, message) {});
+    function stubEventBus() {
+        sinon.stub(eventBus, 'fireEvent', function(event) {});
     }
 
     function restoreZWave() {
@@ -53,20 +55,34 @@ describe('YashZwaveGateway', function() {
         zwave.on.restore();
     }
 
-    function restoreMessenger() {
-        messenger.sendMessage.restore();
+    function restoreEventBus() {
+        eventBus.fireEvent.restore();
+    }
+
+    function getOneMinuteAgo() {
+        var t = new Date();
+        t.setMinutes(t.getMinutes() - 1);
+        return t;
+    }
+
+    function getOneMinuteLater() {
+        var t = new Date();
+        t.setMinutes(t.getMinutes() + 1);
+        return t;
     }
 
     beforeEach(function() {
         stubZWave();
-        stubMessenger();
-        yashZwaveGateway = new YashZwaveGateway(zwave, messenger);
+        stubEventBus();
+        yashZwaveGateway = new YashZwaveGateway(zwave, eventBus);
+        oneMinuteAgo = getOneMinuteAgo();
+        oneMinuteLater = getOneMinuteLater();
     });
 
     afterEach(function() {
         restoreZWave();
         clearEventCallbacks();
-        restoreMessenger();
+        restoreEventBus();
     });
 
     describe('#start()', function() {
@@ -81,19 +97,28 @@ describe('YashZwaveGateway', function() {
         });
 
         it('should send startup message when started', function(done) {
-            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Starting up...');
+            eventBus.fireEvent.should.have.been.called;
+            eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].body.should.equal('Starting up...');
             done();
         });
 
         it('should send success message when started successfully', function(done) {
             fireEvent('scan complete');
-            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Startup successful, initial network scan complete.');
+            eventBus.fireEvent.should.have.been.called;
+            eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].body.should.equal('Startup successful, initial network scan complete.');
             done();
         });
 
         it('should send failure message when driver fails', function(done) {
             fireEvent('driver failed');
-            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Driver failed, network not started.');
+            eventBus.fireEvent.should.have.been.called;
+            eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].body.should.equal('Driver failed, network not started.');
             done();
         });
 
@@ -111,7 +136,10 @@ describe('YashZwaveGateway', function() {
         });
 
         it('should send stopped message when stopped', function(done) {
-            messenger.sendMessage.should.have.been.calledWith('Z-Wave Network', 'Stopped.');
+            eventBus.fireEvent.should.have.been.called;
+            eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].body.should.equal('Stopped.');
             done();
         });
 
@@ -271,7 +299,10 @@ describe('YashZwaveGateway', function() {
                 fireEvent('node ready', TEST_NODE_ID, {});
                 fireValueAdded(TEST_NODE_ID, 'testValue');
                 fireValueChanged(TEST_NODE_ID, 'newValue');
-                messenger.sendMessage.should.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
+                eventBus.fireEvent.should.have.been.called;
+                eventBus.fireEvent.lastCall.args[0].source.should.equal('Node '+TEST_NODE_ID);
+                eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+                eventBus.fireEvent.lastCall.args[0].body.should.equal('Value testLabel changed from testValue to newValue.');
                 done();
             });
 
@@ -282,7 +313,10 @@ describe('YashZwaveGateway', function() {
                 });
                 fireValueAdded(TEST_NODE_ID, 'testValue');
                 fireValueChanged(TEST_NODE_ID, 'newValue');
-                messenger.sendMessage.should.have.been.calledWith(TEST_NODE_NAME, 'Value testLabel changed from testValue to newValue.');
+                eventBus.fireEvent.should.have.been.called;
+                eventBus.fireEvent.lastCall.args[0].source.should.equal(TEST_NODE_NAME);
+                eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+                eventBus.fireEvent.lastCall.args[0].body.should.equal('Value testLabel changed from testValue to newValue.');
                 done();
             });
 
@@ -295,14 +329,22 @@ describe('YashZwaveGateway', function() {
                 });
                 fireValueAdded(TEST_NODE_ID, 'testValue');
                 fireValueChanged(TEST_NODE_ID, 'newValue');
-                messenger.sendMessage.should.have.been.calledWith(TEST_NODE_MANUFACTURER+' '+TEST_NODE_PRODUCT, 'Value testLabel changed from testValue to newValue.');
+                eventBus.fireEvent.should.have.been.called;
+                eventBus.fireEvent.lastCall.args[0].source.should.equal(TEST_NODE_MANUFACTURER+' '+TEST_NODE_PRODUCT);
+                eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+                eventBus.fireEvent.lastCall.args[0].body.should.equal('Value testLabel changed from testValue to newValue.');
                 done();
             });
 
             it('should not send message when node is not ready and zwave fires value changed event', function(done) {
                 fireValueAdded(TEST_NODE_ID, 'testValue');
                 fireValueChanged(TEST_NODE_ID, 'newValue');
-                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to newValue.');
+                eventBus.fireEvent.should.not.have.been.calledWith(
+                    sinon.match({
+                        source: 'Node '+TEST_NODE_ID,
+                        body: 'Value testLabel changed from testValue to newValue.'
+                    })
+                );
                 done();
             });
 
@@ -310,7 +352,12 @@ describe('YashZwaveGateway', function() {
                 fireEvent('node ready', TEST_NODE_ID, {});
                 fireValueAdded(TEST_NODE_ID, 'testValue');
                 fireValueChanged(TEST_NODE_ID, 'testValue');
-                messenger.sendMessage.should.not.have.been.calledWith('Node '+TEST_NODE_ID, 'Value testLabel changed from testValue to testValue.');
+                eventBus.fireEvent.should.not.have.been.calledWith(
+                    sinon.match({
+                        source: 'Node '+TEST_NODE_ID,
+                        body: 'Value testLabel changed from testValue to testValue.'
+                    })
+                );
                 done();
             });
 
