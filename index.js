@@ -14,6 +14,7 @@ var yashTwitterMessenger = new YashTwitterMessenger(twitter);
 
 var YashAlerter = require('./yash-alerter.js');
 var yashAlerter = new YashAlerter(yashTwitterMessenger);
+yashAlerter.addIgnoredEventSource('FIBARO System FGWPE Wall Plug');
 
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave({
