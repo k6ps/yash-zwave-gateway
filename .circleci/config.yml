@@ -18,7 +18,7 @@ jobs:
 
       - run:
           name: install-yash-zwave-gateway
-          command: npm install --production --unsafe-perm && npm cache clean && rm -rf /tmp/*
+          command: npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
