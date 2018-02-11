@@ -4,7 +4,7 @@
   "description": "A gateway for converting and/or exchanging messages between Z-Wave network and networks using other technologies, for use with amateur smart home projects.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter mocha-circleci-reporter test/*.js",
+    "test": "mocha --reporter=xunit --reporter-options output=test/results/test-results.xml test/*.js",
     "start": "node index.js"
   },
   "devDependencies": {
