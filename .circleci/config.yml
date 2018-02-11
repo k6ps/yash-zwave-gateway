@@ -9,12 +9,16 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: install-dependencies
+          command: ./dependencies.sh
+
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
 
       - run:
           name: install-yash-zwave-gateway
-          command: npm install
+          command: npm install --production --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
