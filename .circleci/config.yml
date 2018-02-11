@@ -11,7 +11,7 @@ jobs:
 
       - run:
           name: install-dependencies
-          command: ./dependencies.sh
+          command: chmod +x ./dependencies.sh && ./dependencies.sh
 
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
