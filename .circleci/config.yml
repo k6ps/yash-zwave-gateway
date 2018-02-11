@@ -10,14 +10,14 @@ jobs:
       - checkout
 
       - run:
-          name: install-dependencies
+          name: Install Dependencies
           command: chmod +x ./dependencies-amd64.sh && ./dependencies-amd64.sh
 
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
 
       - run:
-          name: install-yash-zwave-gateway
+          name: Install
           command: npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
       - save_cache:
@@ -26,5 +26,5 @@ jobs:
             - ./node_modules
 
       - run:
-          name: unit-tests
+          name: Run Unit Tests
           command: npm test
