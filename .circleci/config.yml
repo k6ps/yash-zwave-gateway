@@ -44,7 +44,7 @@ jobs:
     steps:
       - run:
           name: Deploy to Resin.io
-          run: which git
+          command: git push resin master
 
 workflows:
   version: 2
