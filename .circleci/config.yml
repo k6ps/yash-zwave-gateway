@@ -53,7 +53,7 @@ jobs:
 
       - run:
           name: Deploy to Resin.io
-          command: ./deploy-to-resin.sh
+          command: chmod +x ./deploy-to-resin.sh && ./deploy-to-resin.sh
 
 workflows:
   version: 2
