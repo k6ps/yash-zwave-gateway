@@ -51,6 +51,10 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Prepare for Deployment
+          command: git remote add resin g_taavi_t_navsuu@git.resin.io:g_taavi_t_navsuu/yashopenzwavegateway.git
+
+      - run:
           name: Deploy to Resin.io
           command: git push resin master
 
