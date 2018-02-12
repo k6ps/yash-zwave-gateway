@@ -35,6 +35,10 @@ jobs:
       - store_test_results:
           path: test/results
 
+      - persist_to_workspace:
+          paths:
+            - .git
+
   deploy-job:
     docker:
       - image: circleci/node:7.10
@@ -42,6 +46,9 @@ jobs:
     working_directory: ~/repo
 
     steps:
+      - attach_workspace:
+          at: .git
+
       - run:
           name: Deploy to Resin.io
           command: git push resin master
