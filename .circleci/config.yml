@@ -36,6 +36,7 @@ jobs:
           path: test/results
 
       - persist_to_workspace:
+          root: ~/repo
           paths:
             - .git
 
