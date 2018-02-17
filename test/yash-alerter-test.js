@@ -28,7 +28,7 @@ describe('YashAlerter', function() {
         messenger.sendMessage.restore();
     });
 
-    it('should send a message via twitter alerter when any event fires', function(done) {
+    it('should send a message via messenger when any event fires', function(done) {
         yashAlerter.onEvent({
             source: 'Some test source',
             time: new Date(),
