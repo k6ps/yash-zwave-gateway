@@ -6,14 +6,18 @@ var sinonChai = require("sinon-chai");
 chai.use(sinonChai);
 var should = chai.should();
 
-var YashTwitterMessenger = require('./../yash-twitter-messenger.js');
-var messenger = new YashTwitterMessenger();
-
 var YashAlerter = require('./../yash-alerter.js');
 
 describe('YashAlerter', function() {
 
+    function createMockMessenger() {
+        var messenger = new Object();
+        messenger.sendMessage = function(){};
+        return messenger;
+    }
+
     var yashAlerter;
+    var messenger = createMockMessenger();
 
     beforeEach(function() {
         sinon.spy(messenger, 'sendMessage');
