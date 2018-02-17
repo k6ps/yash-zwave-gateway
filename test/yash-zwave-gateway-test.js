@@ -11,11 +11,16 @@ var should = chai.should();
 var YashZwaveGateway = require('./../yash-zwave-gateway.js');
 var ZWave = require('openzwave-shared');
 var zwave = new ZWave();
-var YashSimpleEventBus = require('./../yash-simple-event-bus.js');
-var eventBus = new YashSimpleEventBus();
 
 describe('YashZwaveGateway', function() {
 
+    function createMockEventBus() {
+        var eventBus = new Object();
+        eventBus.fireEvent = function(ignoredArg1, ignoredArg2, ignoredArg3) {};
+        return eventBus;
+    }
+
+    var eventBus = createMockEventBus();
     var zwaveEventCallbacks = {};
     var yashZwaveGateway;
     var oneMinuteLater;
