@@ -36,3 +36,6 @@ process.on('SIGINT', function() {
     console.log("Z-Wave Gateway stopped.");
     process.exit();
 });
+
+var YashHttpMessageGateway = require('./yash-http-message-gateway.js');
+var yashHttpMessageGateway = new YashHttpMessageGateway();
