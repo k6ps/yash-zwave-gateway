@@ -16,7 +16,7 @@ describe('YashZwaveGateway', function() {
 
     function createMockEventBus() {
         var eventBus = new Object();
-        eventBus.fireEvent = function(ignoredArg1, ignoredArg2, ignoredArg3) {};
+        eventBus.fireEvent = function(ignoredArg) {};
         return eventBus;
     }
 
@@ -104,7 +104,7 @@ describe('YashZwaveGateway', function() {
         it('should send startup message when started', function(done) {
             eventBus.fireEvent.should.have.been.called;
             eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
-            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo, oneMinuteLater);
             eventBus.fireEvent.lastCall.args[0].body.should.equal('Starting up...');
             done();
         });
@@ -113,7 +113,7 @@ describe('YashZwaveGateway', function() {
             fireEvent('scan complete');
             eventBus.fireEvent.should.have.been.called;
             eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
-            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo, oneMinuteLater);
             eventBus.fireEvent.lastCall.args[0].body.should.equal('Startup successful, initial network scan complete.');
             done();
         });
@@ -122,7 +122,7 @@ describe('YashZwaveGateway', function() {
             fireEvent('driver failed');
             eventBus.fireEvent.should.have.been.called;
             eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
-            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo, oneMinuteLater);
             eventBus.fireEvent.lastCall.args[0].body.should.equal('Driver failed, network not started.');
             done();
         });
@@ -143,7 +143,7 @@ describe('YashZwaveGateway', function() {
         it('should send stopped message when stopped', function(done) {
             eventBus.fireEvent.should.have.been.called;
             eventBus.fireEvent.lastCall.args[0].source.should.equal('Z-Wave Network');
-            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo,oneMinuteLater);
+            eventBus.fireEvent.lastCall.args[0].time.should.be.within(oneMinuteAgo, oneMinuteLater);
             eventBus.fireEvent.lastCall.args[0].body.should.equal('Stopped.');
             done();
         });
