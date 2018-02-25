@@ -52,7 +52,7 @@ describe('YashSimpleEventBus', function() {
 
     describe('#fireEvent', function() {
 
-        it('should not fail when there are no event listeners and  event is fired', function(done) {
+        it('should not fail when there are no event listeners and event is fired', function(done) {
             var yashSimpleEventBus = new YashSimpleEventBus();
             yashSimpleEventBus.fireEvent({});
             done();       
