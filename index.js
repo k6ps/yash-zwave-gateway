@@ -38,4 +38,4 @@ process.on('SIGINT', function() {
 });
 
 var YashHttpMessageGateway = require('./yash-http-message-gateway.js');
-var yashHttpMessageGateway = new YashHttpMessageGateway();
+var yashHttpMessageGateway = new YashHttpMessageGateway(8080, yashSimpleEventBus);
