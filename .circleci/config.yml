@@ -10,34 +10,30 @@ jobs:
       - checkout
 
       - run:
-          name: Go to YASH module subdir
-          command: cd ./yash
-
-      - run:
           name: Install Dependencies
-          command: chmod +x ./dependencies-amd64.sh && ./dependencies-amd64.sh
+          command: cd ./yash && chmod +x ./dependencies-amd64.sh && ./dependencies-amd64.sh
 
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "yash/package.json" }}
 
       - run:
           name: Install
-          command: npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
+          command: cd ./yash && npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "yash/package.json" }}
           paths:
-            - ./node_modules
+            - ./yash/node_modules
 
       - run:
           name: Run Unit Tests
-          command: npm test
+          command: cd ./yash && npm test
 
       - store_artifacts:
-          path: test/results/test-results.xml
+          path: yash/test/results/test-results.xml
 
       - store_test_results:
-          path: test/results
+          path: yash/test/results
 
       - persist_to_workspace:
           root: ~/repo
