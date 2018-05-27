@@ -4,10 +4,14 @@ jobs:
     docker:
       - image: circleci/node:7.10
 
-    working_directory: ~/repo/yash
+    working_directory: ~/repo
 
     steps:
       - checkout
+
+      - run:
+          name: Go to YASH module subdir
+          command: cd ./yash
 
       - run:
           name: Install Dependencies
