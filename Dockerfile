@@ -1,4 +1,4 @@
-FROM resin/raspberrypi2-node:7.0
+FROM resin/%%RESIN_MACHINE_NAME%%-node:7.0
 
 WORKDIR /usr/src/app
 COPY . ./
