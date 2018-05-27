@@ -1,0 +1,12 @@
+version: '2'
+services:
+  event-bus:
+    build: ./event-bus
+    expose:
+      - "80"
+  yash:
+    build: ./yeash
+    depends_on:
+      - event-bus
+    expose:
+      - "8080"

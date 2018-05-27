@@ -1,0 +1,40 @@
+<testsuite name="Mocha Tests" tests="35" failures="1" errors="1" skipped="-1" timestamp="Sun, 18 Feb 2018 15:54:20 GMT" time="1.697">
+<testcase classname="YashAlerter" name="should send a message via messenger when any event fires" time="0.021"/>
+<testcase classname="YashAlerter" name="should not send a message from ignored device" time="0.001"/>
+<testcase classname="YashHttpMessageGateway" name="should start a http server when created" time="0.034"/>
+<testcase classname="YashHttpMessageGateway" name="should listen in a given port" time="0.009"/>
+<testcase classname="YashHttpMessageGateway" name="should listen in default port when no port given" time="0.02"/>
+<testcase classname="YashHttpMessageGateway" name="should return 405 not allowed on HTTP GET method" time="0.388"/>
+<testcase classname="YashHttpMessageGateway" name="&#x22;after each&#x22; hook for &#x22;should return 405 not allowed on HTTP GET method&#x22;" time="0.002"><failure>http.createServer.restore is not a function
+TypeError: http.createServer.restore is not a function
+    at Context.&#x3C;anonymous&#x3E; (test\yash-http-message-gateway-test.js:15:27)</failure></testcase>
+<testcase classname="YashSimpleEventBus #addEventListener()" name="Should have no event listeners by default" time="0.006"/>
+<testcase classname="YashSimpleEventBus #addEventListener()" name="Should have the event listener that was added" time="0.004"/>
+<testcase classname="YashSimpleEventBus #addEventListener()" name="Should have multiple event listener that were added" time="0.001"/>
+<testcase classname="YashSimpleEventBus #fireEvent" name="should not fail when there are no event listeners and  event is fired" time="0.001"/>
+<testcase classname="YashSimpleEventBus #fireEvent" name="should call single event listener when event is fired" time="0.004"/>
+<testcase classname="YashSimpleEventBus #fireEvent" name="should include the correct event data with call to event listener when event is fired" time="0.003"/>
+<testcase classname="YashSimpleEventBus #fireEvent" name="should call multiple event listeners when event is fired" time="0.009"/>
+<testcase classname="YashSimpleEventBus #fireEvent" name="should not fail when event listener does not have onEvent method and event is fired" time="0.001"/>
+<testcase classname="YashTwitterMessenger #sendMessage()" name="should call twitter.post with status update containing message data when message is sent" time="0.005"/>
+<testcase classname="YashTwitterMessenger #sendMessage()" name="should truncate message at Twitters message length limit when message is sent" time="0.004"/>
+<testcase classname="YashZwaveGateway #start()" name="should call zwave.connect with default USB device when started" time="0.001"/>
+<testcase classname="YashZwaveGateway #start()" name="should send startup message when started" time="0.006"/>
+<testcase classname="YashZwaveGateway #start()" name="should send success message when started successfully" time="0.006"/>
+<testcase classname="YashZwaveGateway #start()" name="should send failure message when driver fails" time="0.005"/>
+<testcase classname="YashZwaveGateway #stop()" name="should call zwave.disconnect with default USB device when stopped" time="0.003"/>
+<testcase classname="YashZwaveGateway #stop()" name="should send stopped message when stopped" time="0.001"/>
+<testcase classname="YashZwaveGateway #getNodes()" name="should have zero nodes after start is called" time="0"/>
+<testcase classname="YashZwaveGateway #getNodes()" name="should not have nodes with ids 1, 2, 123, and 456 when addNode has never been called after start" time="0.002"/>
+<testcase classname="YashZwaveGateway node events node added" name="should have the node with given ID and all empty details when zwave fires node added event" time="0.002"/>
+<testcase classname="YashZwaveGateway node events node added" name="should have three nodes with given IDs after zwave fires node added event three times" time="0.002"/>
+<testcase classname="YashZwaveGateway node events node ready" name="should mark node as ready when zwave fires node ready event" time="0.003"/>
+<testcase classname="YashZwaveGateway node events node ready" name="should set node details when zwave fires node ready event" time="0.006"/>
+<testcase classname="YashZwaveGateway node events value added" name="should add node value when zwave fires value added event" time="0.005"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should change node value when zwave fires value changed event" time="0.004"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should send message when node is ready and zwave fires value changed event" time="0.009"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should use node name in message when zwave fires value changed event" time="0.005"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should use node manufacturer and product in message when zwave fires value changed event and name is not given" time="0.003"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should not send message when node is not ready and zwave fires value changed event" time="0.003"/>
+<testcase classname="YashZwaveGateway node events value changed" name="should not send message when node is ready and zwave fires value changed event and new value equals old value" time="0.001"/>
+</testsuite>

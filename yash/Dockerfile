@@ -11,5 +11,5 @@ RUN sh ./dependencies.sh
 RUN JOBS=MAX npm install --production --unsafe-perm && npm cache clean && rm -rf /tmp/*
 #RUN cd /usr/src/app && npm install openzwave-shared
 
-# Test
+# Run node.js
 CMD node ./index.js
