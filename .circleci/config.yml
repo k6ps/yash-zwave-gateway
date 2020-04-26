@@ -13,17 +13,17 @@ jobs:
           name: Install Dependencies
           command: cd ./yash && chmod +x ./dependencies-amd64.sh && ./dependencies-amd64.sh
 
-      - restore_cache:
-          key: dependency-cache-{{ checksum "yash/package.json" }}
+      # - restore_cache:
+      #     key: dependency-cache-{{ checksum "yash/package.json" }}
 
       - run:
           name: Install
           command: cd ./yash && npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
-      - save_cache:
-          key: dependency-cache-{{ checksum "yash/package.json" }}
-          paths:
-            - ./yash/node_modules
+      # - save_cache:
+      #     key: dependency-cache-{{ checksum "yash/package.json" }}
+      #     paths:
+      #       - ./yash/node_modules
 
       - run:
           name: Run Unit Tests
@@ -43,7 +43,7 @@ jobs:
 
   deploy-job:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:13
 
     working_directory: ~/repo
 
