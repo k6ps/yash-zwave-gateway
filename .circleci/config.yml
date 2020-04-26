@@ -18,7 +18,8 @@ jobs:
 
       - run:
           name: Install
-          command: cd ./yash && npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
+          command: cd ./yash && npm install
+          # command: cd ./yash && npm install --dev --unsafe-perm && npm cache clean && rm -rf /tmp/*
 
       # - save_cache:
       #     key: dependency-cache-{{ checksum "yash/package.json" }}
