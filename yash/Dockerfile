@@ -1,4 +1,4 @@
-FROM resin/raspberrypi2-node:7.0
+FROM balenalib/raspberry-pi2-alpine-node:13.1-edge
 
 WORKDIR /usr/src/app
 COPY . ./
