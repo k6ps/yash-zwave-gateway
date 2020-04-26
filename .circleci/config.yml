@@ -3,8 +3,8 @@ jobs:
   build-yash-job:
     docker:
       - image: circleci/node:13
-
-    envorinment:
+      
+    environment:
       LD_LIBRARY_PATH: /usr/local/lib64
 
     working_directory: ~/repo
@@ -23,10 +23,10 @@ jobs:
           name: Install
           command: cd ./yash && npm install
 
-      - save_cache:
-          key: dependency-cache-{{ checksum "yash/package.json" }}
-          paths:
-            - ./yash/node_modules
+      # - save_cache:
+      #     key: dependency-cache-{{ checksum "yash/package.json" }}
+      #     paths:
+      #       - ./yash/node_modules
 
       - run:
           name: Run Unit Tests
