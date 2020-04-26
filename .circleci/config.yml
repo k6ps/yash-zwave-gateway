@@ -18,7 +18,7 @@ jobs:
 
       - run:
           name: Install
-          command: cd ./yash && npm install --dev
+          command: cd ./yash && npm install
 
       - save_cache:
           key: dependency-cache-{{ checksum "yash/package.json" }}
