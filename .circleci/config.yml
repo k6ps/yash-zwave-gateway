@@ -3,7 +3,7 @@ jobs:
   build-yash-job:
     docker:
       - image: circleci/node:13
-      
+
     environment:
       LD_LIBRARY_PATH: /usr/local/lib64
 
@@ -16,17 +16,17 @@ jobs:
           name: Install Dependencies
           command: cd ./yash && sudo chmod +x ./dependencies-amd64.sh && sudo ./dependencies-amd64.sh
 
-      # - restore_cache:
-      #     key: dependency-cache-{{ checksum "yash/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "yash/package.json" }}
 
       - run:
           name: Install
           command: cd ./yash && npm install
 
-      # - save_cache:
-      #     key: dependency-cache-{{ checksum "yash/package.json" }}
-      #     paths:
-      #       - ./yash/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "yash/package.json" }}
+          paths:
+            - ./yash/node_modules
 
       - run:
           name: Run Unit Tests
@@ -55,7 +55,7 @@ jobs:
           at: ~/repo
 
       - run:
-          name: Deploy to Resin.io
+          name: Deploy to BalenaCloud
           command: chmod +x ./deploy-to-resin.sh && ./deploy-to-resin.sh
 
 workflows:
