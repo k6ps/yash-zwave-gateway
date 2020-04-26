@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-yash-job:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:13
 
     working_directory: ~/repo
 
