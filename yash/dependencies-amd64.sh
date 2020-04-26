@@ -12,8 +12,7 @@ echo "== Installing OpenZWave ... =="
 git clone https://github.com/OpenZWave/open-zwave.git && \
 cd ./open-zwave && \
 sudo make && \
-sudo make install && \
-rm -R ~/.node-gyp
+sudo make install
 # wget http://mirror.my-ho.st/Downloads/OpenZWave/Debian_8.0/amd64/openzwave_1.4.164_amd64.deb
 # wget http://mirror.my-ho.st/Downloads/OpenZWave/Debian_8.0/amd64/libopenzwave1.3-dev_1.4.164_amd64.deb
 # wget http://mirror.my-ho.st/Downloads/OpenZWave/Debian_8.0/amd64/libopenzwave1.3_1.4.164_amd64.deb
