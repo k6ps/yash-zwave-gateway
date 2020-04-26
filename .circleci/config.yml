@@ -4,6 +4,9 @@ jobs:
     docker:
       - image: circleci/node:13
 
+    envorinment:
+      LD_LIBRARY_PATH: /usr/local/lib64
+
     working_directory: ~/repo
 
     steps:
@@ -26,8 +29,6 @@ jobs:
             - ./yash/node_modules
 
       - run:
-          envorinment:
-            LD_LIBRARY_PATH: /usr/local/lib64
           name: Run Unit Tests
           command: cd ./yash && npm test
 
