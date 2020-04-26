@@ -16,8 +16,8 @@ jobs:
           name: Install Dependencies
           command: cd ./yash && sudo chmod +x ./dependencies-amd64.sh && sudo ./dependencies-amd64.sh
 
-      - restore_cache:
-          key: dependency-cache-{{ checksum "yash/package.json" }}
+      # - restore_cache:
+      #     key: dependency-cache-{{ checksum "yash/package.json" }}
 
       - run:
           name: Install
